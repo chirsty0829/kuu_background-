@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V7.7</title>
+    <title>뀨 kuu 🎀 Studio V7.7.1</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
         body { background-color: var(--p); display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden; color: var(--txt); }
 
-        /* 頂部儲存欄 */
         .top-bar { flex: 0 0 auto; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: white; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .brand { font-weight: bold; color: var(--a); font-size: 1rem; }
         .save-btn { background: var(--a); color: white; border: none; padding: 7px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
 
-        /* 成果區域 */
         .preview-box { flex: 0 0 32vh; display: flex; align-items: center; justify-content: center; padding: 15px; }
         canvas { background: #fff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); max-height: 100%; max-width: 50%; border: 4px solid white; aspect-ratio: 9/16; }
 
-        /* 控制面板 */
         .controls-main { flex: 1; overflow-y: auto; padding: 10px 20px; display: flex; flex-direction: column; gap: 10px; background: white; border-radius: var(--radius) var(--radius) 0 0; }
         .panel { background: #fef8f9; border-radius: var(--radius); border: 1px solid #fff0f3; margin-bottom: 5px; }
         .p-h { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -27,7 +24,6 @@
         .p-b { padding: 0 15px 15px; border-top: 1px solid #fff5f7; display: none; }
         .panel.open .p-b { display: block; }
 
-        /* 排序按鈕樣式 */
         .order-btns { display: flex; gap: 5px; margin-right: 10px; }
         .order-btn { background: #fff; border: 1px solid #eee; border-radius: 5px; width: 24px; height: 24px; font-size: 0.7rem; color: var(--a); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
@@ -44,7 +40,6 @@
 
         .bottom-spacer { height: 150px; flex-shrink: 0; }
 
-        /* 選色彈窗 */
         .pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .pop.open { display: flex; }
         .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; }
@@ -54,7 +49,7 @@
 <body>
 
     <div class="top-bar">
-        <div class="brand">뀨 kuu Studio V7.7</div>
+        <div class="brand">뀨 kuu Studio V7.7.1</div>
         <button class="save-btn" onclick="save()">儲存照片</button>
     </div>
 
@@ -63,10 +58,9 @@
     </div>
 
     <div class="controls-main">
-        <div class="panel">
+        <div class="panel" id="p-bg">
             <div class="p-h" onclick="tglPanel(this)">
-                <div class="p-h-left"><h3>🎨 背景底色</h3></div>
-                <span>▼</span>
+                <div class="p-h-left"><h3>▶ 背景底色設定</h3></div>
             </div>
             <div class="p-b">
                 <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景顏色</span></div>
@@ -99,13 +93,12 @@
     
     let bgColor = '#ffeef2';
     let layers = [];
-    let openId = null; // 紀錄當前展開的 ID
+    let openId = 'bg'; // 預設開啟底色面板
 
     function tglPanel(el) { 
         const p = el.parentElement;
-        const id = p.id === '' ? 'bg' : p.id.split('-')[1];
-        if (openId == id) openId = null;
-        else openId = id;
+        const id = p.id.split('-')[1];
+        openId = (openId === id) ? null : id;
         initUI();
     }
 
@@ -119,6 +112,13 @@
     }
 
     function initUI() {
+        // 先處理固定在 HTML 裡的背景面板
+        const bgP = g('p-bg');
+        bgP.className = 'panel' + (openId === 'bg' ? ' open' : '');
+        bgP.querySelector('h3').innerText = (openId === 'bg' ? '▼' : '▶') + ' 背景底色設定';
+        g('bg_cb').style.background = bgColor;
+
+        // 再處理動態圖層
         const list = g('layer-list'); list.innerHTML = '';
         layers.forEach((l, idx) => {
             const isStr = l.type==='stripes';
@@ -150,13 +150,12 @@
                 </div>
             </div>`);
         });
-        g('bg_cb').style.background = bgColor;
     }
 
     function addL(type) { 
         const newId = Date.now();
         layers.unshift({id:newId, type, on:true, color:'#ffffff', val:type==='emoji'?'✨':'', sz:type==='stripes'?40:type==='emoji'?100:30, sp:200, fill:true, ang:45, blur:0, op:1}); 
-        openId = newId; // 新增時自動展開
+        openId = newId; 
         initUI(); draw(); 
     }
     function delL(id) { layers=layers.filter(x=>x.id!==id); if(openId==id)openId=null; initUI(); draw(); }
@@ -166,22 +165,19 @@
     let curId = null;
     function openPicker(id) { curId=id; g('picker-pop').classList.add('open'); g('hex-in').value=(id==='bg'?bgColor:layers.find(x=>x.id===curId).color); }
     function closePop() { g('picker-pop').classList.remove('open'); initUI(); draw(); }
-    function setC(c) { if(curId==='bg') bgColor=c; else layers.find(x=>x.id===curId).color=c; g('bg_cb').style.background=bgColor; draw(); }
+    function setC(c) { if(curId==='bg') bgColor=c; else layers.find(x=>x.id===curId).color=c; initUI(); draw(); }
     g('hex-in').oninput = function() { setC(this.value); }
     g('preset-grid').innerHTML = presets.map(c => `<div class="kuu-color-btn" style="background:${c}" onclick="setC('${c}')"></div>`).join('');
 
     function draw() {
         ctx.clearRect(0,0,c.width,c.height);
         ctx.fillStyle = bgColor; ctx.fillRect(0,0,c.width,c.height);
-        
-        // 渲染邏輯：陣列 index 0 的是「最頂層」，所以繪圖時要從最後一個 idx 畫回 index 0
         [...layers].reverse().forEach(l => {
             ctx.save();
             ctx.globalAlpha = l.op ?? 1;
             ctx.filter = `blur(${l.blur || 0}px)`;
             ctx.fillStyle = l.color; ctx.strokeStyle = l.color;
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-
             if(l.type === 'emoji') {
                 const off = document.createElement('canvas'); off.width=l.sz*1.5; off.height=l.sz*1.5;
                 const octx = off.getContext('2d'); octx.font = `${l.sz}px serif`; octx.textAlign='center'; octx.textBaseline='middle';
@@ -224,7 +220,7 @@
         });
     }
 
-    function save() { const a=document.createElement('a'); a.download='kuu_studio_v7_7.png'; a.href=c.toDataURL(); a.click(); }
+    function save() { const a=document.createElement('a'); a.download='kuu_studio_final.png'; a.href=c.toDataURL(); a.click(); }
     initUI(); draw();
 </script>
 </body>
