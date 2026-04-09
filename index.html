@@ -3,422 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뀨 kuu 🎀 Story Background Studio v3</title>
+    <title>뀨 kuu 🎀 Background Studio V4</title>
     <style>
-        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #555; }
-        body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; font-family: 'Segoe UI', 'SF Pro Icons', Roboto, sans-serif; padding: 10px; margin: 0; color: var(--txt); }
-        h1.brand { color: var(--a); font-weight: 300; font-size: 1.6rem; margin: 15px 0; text-align: center; }
+        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; }
+        * { box-sizing: border-box; font-family: "Quicksand", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+        body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; }
         
-        .main-container { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1000px; gap: 15px; }
-        
-        /* 預覽畫布：固定在最上方，適應手機屏幕 */
-        .preview-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
-        canvas { border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: #fff; width: 280px; max-width: 90%; border: 5px solid white; height: auto; touch-action: none;}
-        button.dl { background: var(--a); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; width: 280px; max-width: 90%; margin-top: 15px; font-size: 1rem; transition: 0.3s; box-shadow: 0 4px 10px rgba(255,183,197,0.4); }
-        button.dl:hover { background: #ff9aae; transform: translateY(-2px); }
+        /* 1. 預覽區置頂 */
+        .preview-section { width: 100%; max-width: 320px; position: sticky; top: 0; z-index: 100; background: var(--p); padding-bottom: 15px; display: flex; flex-direction: column; align-items: center; }
+        canvas { background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(255,183,197,0.4); width: 100%; height: auto; border: 6px solid white; }
+        .brand-name { color: var(--a); font-size: 1.5rem; margin: 10px 0; font-weight: bold; }
+        .dl-btn { background: var(--a); color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; margin-top: 10px; cursor: pointer; font-size: 1rem; font-weight: bold; box-shadow: 0 4px 10px rgba(255,183,197,0.3); }
 
-        /* 控制面板：下方的手風琴式菜單 */
-        .controls-area { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
-        .control-panel { background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); overflow: hidden; transition: 0.3s; }
-        .panel-header { padding: 12px 18px; background: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f9f9f9; }
-        .panel-header h2 { color: var(--txt); font-size: 0.95rem; margin: 0; font-weight: 600; }
-        .panel-header .icon { color: var(--a); transition: 0.3s; font-size: 0.8rem; }
-        .panel-content { padding: 15px 18px; display: none; } /* 預設隱藏 */
-        .panel-panel.active .panel-content { display: block; }
-        .panel-panel.active .panel-header .icon { transform: rotate(180deg); }
+        /* 2. 下方控制面板 */
+        .controls-section { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px; }
+        .panel { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .panel-h { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .panel-h h3 { margin: 0; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .panel-b { padding: 0 15px 15px; display: none; border-top: 1px solid #fff0f3; }
+        .panel.open .panel-b { display: block; }
 
-        /* 輸入控制項樣式 */
-        .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px;}
-        input[type="color"] { border: none; width: 35px; height: 35px; cursor: pointer; background: none; margin:0; padding:0;}
-        label { font-size: 0.8rem; color: #888; display: block; margin-bottom: 3px;}
-        
-        /* 自定義拉桿 */
-        .slider-group { margin-bottom: 12px; }
-        input[type="range"] { width: 100%; margin: 5px 0; cursor: pointer; height: 5px; -webkit-appearance: none; background: #f0f0f0; border-radius: 5px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--a); border-radius: 50%; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
+        /* UI 元件 */
+        .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        input[type="color"] { border: none; width: 35px; height: 35px; background: none; cursor: pointer; }
+        input[type="range"] { flex: 1; height: 5px; -webkit-appearance: none; background: #fce4e8; border-radius: 5px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--a); border-radius: 50%; border: 2px solid white; cursor: pointer; }
+        .label-text { font-size: 0.8rem; color: #999; width: 60px; }
+        .mode-btn { font-size: 0.75rem; border: 1px solid var(--a); color: var(--a); background: white; padding: 3px 8px; border-radius: 10px; cursor: pointer; }
+        .mode-btn.active { background: var(--a); color: white; }
+        input[type="checkbox"] { transform: scale(1.3); accent-color: var(--a); }
     </style>
 </head>
 <body>
-    <h1 class="brand">뀨 kuu 🎀 Background Studio</h1>
 
-    <div class="main-container">
-        <div class="preview-area">
-            <canvas id="cv" width="1080" height="1920"></canvas>
-            <button class="dl" onclick="download()">下載 PNG 背景圖</button>
-        </div>
-
-        <div class="controls-area">
-            
-            <div class="control-panel panel-panel active"> <div class="panel-header"><h2>🎨 基礎顏色</h2><span class="icon">▼</span></div>
-                <div class="panel-content">
-                    <div class="row"><input type="color" id="bg" value="#ffeef2"><label>背景底色</label></div>
-                    <div class="row"><input type="color" id="pc" value="#ffffff"><label>圖案顏色</label></div>
-                </div>
-            </div>
-
-            <div class="control-panel panel-panel">
-                <div class="panel-header"><h2>⚪ 波點 (Dots)</h2><span class="icon">▼</span></div>
-                <div class="panel-content">
-                    <div class="slider-group"><label>大小</label><input type="range" id="dots_sz" min="2" max="60" value="15"></div>
-                    <div class="slider-group"><label>分散程度</label><input type="range" id="dots_sp" min="30" max="250" value="70"></div>
-                </div>
-            </div>
-
-            <div class="control-panel panel-panel">
-                <div class="panel-header"><h2>⭐ 星星 (Stars)</h2><span class="icon">▼</span></div>
-                <div class="panel-content">
-                    <div class="slider-group"><label>大小</label><input type="range" id="stars_sz" min="5" max="80" value="20"></div>
-                    <div class="slider-group"><label>分散程度</label><input type="range" id="stars_sp" min="40" max="300" value="90"></div>
-                </div>
-            </div>
-
-            <div class="control-panel panel-panel">
-                <div class="panel-header"><h2>💖 愛心 (Hearts)</h2><span class="icon">▼</span></div>
-                <div class="panel-content">
-                    <div class="slider-group"><label>大小 (更圓潤囉!)</label><input type="range" id="hearts_sz" min="5" max="80" value="25"></div>
-                    <div class="slider-group"><label>分散程度</label><input type="range" id="hearts_sp" min="40" max="300" value="100"></div>
-                </div>
-            </div>
-
-            <div class="control-panel panel-panel">
-                <div class="panel-header"><h2>➖ 條紋 (Stripes)</h2><span class="icon">▼</span></div>
-                <div class="panel-content">
-                    <div class="slider-group"><label>粗細</label><input type="range" id="stripes_sz" min="1" max="50" value="10"></div>
-                    <div class="slider-group"><label>密集度</label><input type="range" id="stripes_sp" min="10" max="150" value="40"></div>
-                    <div class="slider-group"><label>角度 (0°橫紋, 90°直紋)</label><input type="range" id="stripes_an" min="0" max="360" value="315"></div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
-        
-        // --- 繪製各種符號的函數 ---
-        const drawDot = (x, y, s) => { ctx.beginPath(); ctx.arc(x, y, s, 0, 7); ctx.fill(); };
-        
-        const drawStar = (cx, cy, spikes, outerRadius, innerRadius) => {
-            let rot = Math.PI/2*3, x = cx, y = cy, step=Math.PI/spikes;
-            ctx.beginPath(); ctx.moveTo(cx, cy-outerRadius);
-            for(let i=0; i<spikes; i++){
-                x=cx+Math.cos(rot)*outerRadius; y=cy+Math.sin(rot)*outerRadius; ctx.lineTo(x,y); rot+=step;
-                x=cx+Math.cos(rot)*innerRadius; y=cy+Math.sin(rot)*innerRadius; ctx.lineTo(x,y); rot+=step;
-            }
-            ctx.lineTo(cx, cy-outerRadius); ctx.closePath(); ctx.fill();
-        };
-
-        // 新版更圓潤的畫心公式
-        const drawHeart = (x, y, size) => {
-            ctx.beginPath();
-            let t = size * 1.1; // 基礎縮放
-            // 起點：底部尖端
-            ctx.moveTo(x, y + t * 0.7); 
-            // 左側貝茲曲線：控制點1, 控制點2, 終點(頂部凹陷)
-            ctx.bezierCurveTo(x - t * 0.9, y - t * 0.1, x - t * 0.4, y - t * 0.8, x, y - t * 0.2);
-            // 右側貝茲曲線：控制點1, 控制點2, 終點(底部尖端)
-            ctx.bezierCurveTo(x + t * 0.4, y - t * 0.8, x + t * 0.9, y - t * 0.1, x, y + t * 0.7);
-            ctx.fill();
-        };
-
-        const drawStripes = (w, h, s, sz, angle, color) => {
-            ctx.lineWidth = sz; ctx.strokeStyle = color; ctx.lineCap = 'round';
-            const rad = angle * Math.PI / 180;
-            // 計算跨度以覆蓋整個畫布
-            const cos = Math.cos(rad), sin = Math.sin(rad);
-            const dist = Math.abs(w * cos) + Math.abs(h * sin);
-            
-            for (let i = -dist; i < dist; i += s) {
-                // 根據角度計算每一條線的起點和終點
-                let x1 = i * cos - 2000 * sin; let y1 = i * sin + 2000 * cos;
-                let x2 = i * cos + 2000 * sin; let y2 = i * sin - 2000 * cos;
-                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-            }
-        };
-
-        // --- 主繪製函數 (關鍵改進：獨立循環) ---
-        function draw() {
-            const w = c.width, h = c.height, color = g('pc').value;
-            // 1. 畫底色
-            ctx.fillStyle = g('bg').value; ctx.fillRect(0,0,w,h);
-            ctx.fillStyle = color;
-
-            // 2. 繪製條紋 (放在最底層)
-            drawStripes(w, h, +g('stripes_sp').value, +g('stripes_sz').value, +g('stripes_an').value, color);
-
-            // 3. 獨立繪製波點
-            const d_sp = +g('dots_sp').value, d_sz = +g('dots_sz').value;
-            ctx.fillStyle = color;
-            for(let y=0; y<h+d_sp; y+=d_sp) for(let x=0; x<w+d_sp; x+=d_sp) {
-                let shift = (Math.floor(y/d_sp)%2==0)?0:d_sp/2; drawDot(x + shift, y, d_sz);
-            }
-
-            // 4. 獨立繪製星星 (分散和大小獨立)
-            const st_sp = +g('stars_sp').value, st_sz = +g('stars_sz').value;
-            for(let y=0; y<h+st_sp; y+=st_sp) for(let x=0; x<w+st_sp; x+=st_sp) {
-                let shift = (Math.floor(y/st_sp)%2==0)?0:st_sp/2; drawStar(x + shift, y, 5, st_sz, st_sz*0.45);
-            }
-
-            // 5. 獨立繪製愛心 (分散和大小獨立，且圓潤)
-            const he_sp = +g('hearts_sp').value, he_sz = +g('hearts_sz').value;
-            for(let y=0; y<h+he_sp; y+=he_sp) for(let x=0; x<w+he_sp; x+=he_sp) {
-                let shift = (Math.floor(y/he_sp)%2==0)?0:he_sp/2; drawHeart(x + shift, y, he_sz);
-            }
-        }
-
-        // --- 互動邏輯 ---
-        // 監聽所有輸入項
-        const allInputs = ['bg','pc','dots_sz','dots_sp','stars_sz','stars_sp','hearts_sz','hearts_sp','stripes_sz','stripes_sp','stripes_an'];
-        allInputs.forEach(i => g(i).oninput = draw);
-
-        // 控制面板手風琴效果
-        document.querySelectorAll('.panel-header').forEach(header => {
-            header.addEventListener('click', () => {
-                header.parentElement.classList.toggle('active');
-            });
-        });
-
-        function download() { let a = document.createElement('a'); a.download='kuu-bg.png'; a.href=c.toDataURL(); a.click(); }
-        
-        // 初始化
-        draw();
-    </script>
-</body>
-</html>            <div class="row"><input type="color" id="bg" value="#ffeef2"><label>背景底色</label></div>
-            <div class="row"><input type="color" id="pc" value="#ffffff"><label>圖案顏色</label></div>
-
-            <h2>✨ 符號選擇 (可多選疊加)</h2>
-            <div class="shape-group" id="shapeSelector">
-                <div class="shape-btn" data-shape="dots">⚪ 波點</div>
-                <div class="shape-btn" data-shape="stars">⭐ 星星</div>
-                <div class="shape-btn" data-shape="hearts">💖 愛心</div>
-                <div class="shape-btn" data-shape="stripes">➖ 條紋</div>
-            </div>
-
-            <h2>🎛️ 圖案控制 (共同控制)</h2>
-            <label>圖案大小</label><input type="range" id="sz" min="2" max="60" value="15">
-            <label>密集間距</label><input type="range" id="sp" min="30" max="250" value="70">
-            
-            <button class="dl" onclick="download()">下載 PNG 背景圖</button>
-        </div>
+    <div class="preview-section">
+        <div class="brand-name">뀨 kuu 🎀</div>
         <canvas id="cv" width="1080" height="1920"></canvas>
+        <button class="dl-btn" onclick="save()">儲存背景圖 (.png)</button>
     </div>
-    <script>
-        const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
-        
-        let activeShapes = ['dots']; // 預設開啟波點
-        
-        // --- 繪製各種符號的函數 ---
-        const drawDot = (x, y, s) => { ctx.beginPath(); ctx.arc(x, y, s, 0, 7); ctx.fill(); };
-        
-        const drawStar = (cx, cy, spikes, outerRadius, innerRadius) => {
-            let rot = Math.PI/2*3, x = cx, y = cy, step=Math.PI/spikes;
-            ctx.beginPath(); ctx.moveTo(cx, cy-outerRadius);
-            for(let i=0; i<spikes; i++){
-                x=cx+Math.cos(rot)*outerRadius; y=cy+Math.sin(rot)*outerRadius; ctx.lineTo(x,y); rot+=step;
-                x=cx+Math.cos(rot)*innerRadius; y=cy+Math.sin(rot)*innerRadius; ctx.lineTo(x,y); rot+=step;
-            }
-            ctx.lineTo(cx, cy-outerRadius); ctx.closePath(); ctx.fill();
-        };
 
-        const drawHeart = (x, y, size) => {
-            ctx.beginPath();
-            let s = size * 0.7; // 心形基礎縮放
-            ctx.moveTo(x, y + s*0.3);
-            ctx.bezierCurveTo(x, y - s*0.2, x - s/2, y - s*0.2, x - s/2, y + s*0.3);
-            ctx.bezierCurveTo(x - s/2, y + s*0.8, x, y + s*1.1, x, y + s*1.3);
-            ctx.bezierCurveTo(x, y + s*1.1, x + s/2, y + s*0.8, x + s/2, y + s*0.3);
-            ctx.bezierCurveTo(x + s/2, y - s*0.2, x, y - s*0.2, x, y + s*0.3);
-            ctx.fill();
-        };
-
-        const drawStripes = (w, h, s, sz, color) => {
-            ctx.lineWidth = sz; ctx.strokeStyle = color;
-            for(let i=0; i<w+h; i+=s) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i-h,h); ctx.stroke(); }
-        };
-
-        // --- 主繪製函數 ---
-        function draw() {
-            const w = c.width, h = c.height, sz = +g('sz').value, sp = +g('sp').value, color = g('pc').value;
-            // 1. 畫底色
-            ctx.fillStyle = g('bg').value; ctx.fillRect(0,0,w,h);
-            ctx.fillStyle = color;
-
-            // 2. 繪製條紋 (如果選中，放在最底層)
-            if (activeShapes.includes('stripes')) { drawStripes(w, h, sp, sz, color); }
-
-            // 3. 繪製平鋪圖案 (波點、星星、愛心)
-            if (activeShapes.includes('dots') || activeShapes.includes('stars') || activeShapes.includes('hearts')) {
-                ctx.fillStyle = color;
-                for(let y=0; y<h+sp; y+=sp) {
-                    for(let x=0; x<w+sp; x+=sp) {
-                        // 交錯邏輯
-                        let shift = (Math.floor(y/sp)%2==0)?0:sp/2;
-                        let curX = x + shift, curY = y;
-
-                        if (activeShapes.includes('dots')) { drawDot(curX, curY, sz); }
-                        if (activeShapes.includes('stars')) { drawStar(curX, curY, 5, sz*1.2, sz*0.5); }
-                        if (activeShapes.includes('hearts')) { drawHeart(curX, curY, sz*1.4); }
-                    }
-                }
-            }
-        }
-
-        // --- 互動邏輯 ---
-        // 監聽拉桿和顏色選擇
-        ['bg','pc','sz','sp'].forEach(i => g(i).oninput = draw);
-
-        // 形狀多選邏輯
-        const selector = g('shapeSelector');
-        selector.querySelectorAll('.shape-btn').forEach(btn => {
-            // 預設將 activeshapes 裡有的形狀加上 active class
-            if (activeShapes.includes(btn.dataset.shape)) btn.classList.add('active');
-
-            btn.addEventListener('click', () => {
-                const shape = btn.dataset.shape;
-                btn.classList.toggle('active'); // 切換按鈕樣式
-                
-                // 更新 activeShapes 陣列
-                if (btn.classList.contains('active')) {
-                    if (!activeShapes.includes(shape)) activeShapes.push(shape);
-                } else {
-                    activeShapes = activeShapes.filter(s => s !== shape);
-                }
-                draw(); // 重新繪製
-            });
-        });
-
-        function download() { let a = document.createElement('a'); a.download='ig-story-bg.png'; a.href=c.toDataURL(); a.click(); }
-        
-        // 初始化
-        draw();
-    </script>
-</body>
-</html>            min-width: 300px;
-        }
-        h2 { color: var(--accent-pink); font-size: 1.2rem; margin-top: 0; }
-        .control-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: bold; }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        input[type="color"] { border: none; width: 40px; height: 40px; cursor: pointer; background: none; }
-        
-        /* 預覽區 */
-        .preview-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        canvas {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            max-width: 100%;
-            height: auto;
-            border: 5px solid white;
-        }
-        .btn-download {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: var(--accent-pink);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        .btn-download:hover { background-color: #ff9aae; transform: translateY(-2px); }
-    </style>
-</head>
-<body>
-
-    <h1 style="color: #ffb7c5; font-weight: 300;">Story Canvas Studio</h1>
-
-    <div class="container">
-        <div class="controls">
-            <h2>🎨 顏色設定</h2>
-            <div class="control-group">
-                <label>背景底色</label>
-                <input type="color" id="bgColor" value="#ffeef2">
-            </div>
-            <div class="control-group">
-                <label>圖案顏色</label>
-                <input type="color" id="patternColor" value="#ffffff">
-            </div>
-
-            <hr style="border: 0.5px solid #eee; margin: 25px 0;">
-
-            <h2>⚪ 波點設定 (Dots)</h2>
-            <div class="control-group">
-                <label>波點大小</label>
-                <input type="range" id="dotSize" min="1" max="50" value="10">
-            </div>
-            <div class="control-group">
-                <label>密集間距</label>
-                <input type="range" id="dotSpacing" min="20" max="200" value="60">
+    <div class="controls-section">
+        <div class="panel open">
+            <div class="panel-h"><h3>🎨 基礎色調</h3></div>
+            <div class="panel-b">
+                <div class="row"><input type="color" id="bg" value="#ffeef2"><span class="label-text">背景底色</span></div>
+                <div class="row"><input type="color" id="pc" value="#ffffff"><span class="label-text">圖案顏色</span></div>
             </div>
         </div>
 
-        <div class="preview-area">
-            <canvas id="canvas" width="1080" height="1920" style="width: 300px;"></canvas>
-            <button class="btn-download" id="downloadBtn">下載背景圖 (.png)</button>
-        </div>
+        <div id="shape-panels"></div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // 取得所有控制項
-        const bgColorInput = document.getElementById('bgColor');
-        const patternColorInput = document.getElementById('patternColor');
-        const dotSizeInput = document.getElementById('dotSize');
-        const dotSpacingInput = document.getElementById('dotSpacing');
-        const downloadBtn = document.getElementById('downloadBtn');
+<script>
+    const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
+    const shapeData = [
+        { id: 'dots', name: '⚪ 波點', sz: 15, sp: 70, on: true },
+        { id: 'stars', name: '⭐ 星星', sz: 20, sp: 100, on: false },
+        { id: 'hearts', name: '💖 飽滿愛心', sz: 25, sp: 100, on: false },
+        { id: 'clovers', name: '🍀 四葉草', sz: 25, sp: 110, on: false },
+        { id: 'bows', name: '🎀 蝴蝶結', sz: 30, sp: 120, on: false },
+        { id: 'stripes', name: '➖ 條紋', sz: 10, sp: 50, on: false, ang: 315 }
+    ];
 
-        function draw() {
-            const width = canvas.width;
-            const height = canvas.height;
-            const bgColor = bgColorInput.value;
-            const patternColor = patternColorInput.value;
-            const dotSize = parseInt(dotSizeInput.value);
-            const spacing = parseInt(dotSpacingInput.value);
+    // 初始化面板
+    shapeData.forEach(s => {
+        const html = `
+            <div class="panel" id="p_${s.id}">
+                <div class="panel-h">
+                    <h3><input type="checkbox" id="${s.id}_on" ${s.on?'checked':''}> ${s.name}</h3>
+                    <span onclick="togglePanel('${s.id}')">▼</span>
+                </div>
+                <div class="panel-b">
+                    <div class="row"><span class="label-text">大小</span><input type="range" id="${s.id}_sz" min="2" max="80" value="${s.sz}"></div>
+                    <div class="row"><span class="label-text">間距</span><input type="range" id="${s.id}_sp" min="30" max="350" value="${s.sp}"></div>
+                    ${s.id !== 'stripes' ? `<button class="mode-btn active" id="${s.id}_fm" onclick="tglFill('${s.id}')">填充模式: ON</button>` : 
+                    `<div class="row"><span class="label-text">角度</span><input type="range" id="stripes_an" min="0" max="360" value="${s.ang}"></div>`}
+                </div>
+            </div>`;
+        g('shape-panels').insertAdjacentHTML('beforeend', html);
+    });
 
-            // 1. 畫背景
-            ctx.fillStyle = bgColor;
-            ctx.fillRect(0, 0, width, height);
+    function togglePanel(id) { g('p_'+id).classList.toggle('open'); }
+    function tglFill(id) { 
+        const b = g(id+'_fm'); b.classList.toggle('active'); 
+        b.innerText = b.classList.contains('active') ? '填充模式: ON' : '填充模式: OFF';
+        draw();
+    }
 
-            // 2. 畫波點 (交錯排列增加美感)
-            ctx.fillStyle = patternColor;
-            for (let y = 0; y < height + spacing; y += spacing) {
-                for (let x = 0; x < width + spacing; x += spacing) {
-                    // 每隔一行平移一半距離，做出交叉排版的視覺感
-                    let shift = (Math.floor(y / spacing) % 2 === 0) ? 0 : spacing / 2;
-                    ctx.beginPath();
-                    ctx.arc(x + shift, y, dotSize, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+    // 繪製函數
+    const drawStar = (x, y, sz, fill) => {
+        let r=sz, ir=sz*0.45, rot=Math.PI/2*3, step=Math.PI/5;
+        ctx.beginPath(); ctx.moveTo(x, y-r);
+        for(let i=0;i<5;i++){
+            ctx.lineTo(x+Math.cos(rot)*r, y+Math.sin(rot)*r); rot+=step;
+            ctx.lineTo(x+Math.cos(rot)*ir, y+Math.sin(rot)*ir); rot+=step;
+        }
+        ctx.closePath(); fill?ctx.fill():ctx.stroke();
+    }
+    const drawHeart = (x, y, sz, fill) => {
+        ctx.beginPath(); let t = sz;
+        ctx.moveTo(x, y + t * 0.7);
+        ctx.bezierCurveTo(x - t * 0.9, y - t * 0.1, x - t * 0.4, y - t * 0.8, x, y - t * 0.2);
+        ctx.bezierCurveTo(x + t * 0.4, y - t * 0.8, x + t * 0.9, y - t * 0.1, x, y + t * 0.7);
+        fill?ctx.fill():ctx.stroke();
+    }
+    const drawClover = (x, y, s, fill) => {
+        for(let i=0; i<4; i++) {
+            ctx.save(); ctx.translate(x, y); ctx.rotate((i*90)*Math.PI/180);
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(-s, -s, s, -s, 0, 0);
+            fill?ctx.fill():ctx.stroke(); ctx.restore();
+        }
+    }
+    const drawBow = (x, y, s, fill) => {
+        ctx.beginPath(); ctx.ellipse(x-s*0.5, y, s*0.6, s*0.4, 0.5, 0, 7);
+        ctx.ellipse(x+s*0.5, y, s*0.6, s*0.4, -0.5, 0, 7);
+        ctx.arc(x, y, s*0.2, 0, 7); fill?ctx.fill():ctx.stroke();
+    }
+
+    function draw() {
+        const w=c.width, h=c.height, color=g('pc').value;
+        ctx.fillStyle=g('bg').value; ctx.fillRect(0,0,w,h);
+        ctx.fillStyle=color; ctx.strokeStyle=color; ctx.lineWidth=3;
+
+        // 1. 條紋
+        if(g('stripes_on').checked) {
+            const sz=+g('stripes_sz').value, sp=+g('stripes_sp').value, an=+g('stripes_an').value * Math.PI/180;
+            ctx.lineWidth=sz;
+            for(let i=-2500; i<2500; i+=sp) {
+                ctx.beginPath(); ctx.moveTo(i*Math.cos(an)-2000*Math.sin(an), i*Math.sin(an)+2000*Math.cos(an));
+                ctx.lineTo(i*Math.cos(an)+2000*Math.sin(an), i*Math.sin(an)-2000*Math.cos(an)); ctx.stroke();
             }
         }
 
-        // 監聽輸入事件，實時更新畫布
-        [bgColorInput, patternColorInput, dotSizeInput, dotSpacingInput].forEach(input => {
-            input.addEventListener('input', draw);
+        // 2. 其它圖案
+        shapeData.filter(s=>s.id!=='stripes').forEach(s => {
+            if(!g(s.id+'_on').checked) return;
+            const sz=+g(s.id+'_sz').value, sp=+g(s.id+'_sp').value, isF=g(s.id+'_fm').classList.contains('active');
+            for(let y=0; y<h+sp; y+=sp) for(let x=0; x<w+sp; x+=sp) {
+                let sh = (Math.floor(y/sp)%2==0)?0:sp/2;
+                if(s.id==='dots'){ ctx.beginPath(); ctx.arc(x+sh,y,sz,0,7); isF?ctx.fill():ctx.stroke(); }
+                if(s.id==='stars') drawStar(x+sh, y, sz, isF);
+                if(s.id==='hearts') drawHeart(x+sh, y, sz, isF);
+                if(s.id==='clovers') drawClover(x+sh, y, sz, isF);
+                if(s.id==='bows') drawBow(x+sh, y, sz, isF);
+            }
         });
+    }
 
-        // 下載功能
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'my-ig-background.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-
-        // 初始化繪製
-        draw();
-    </script>
+    document.querySelectorAll('input').forEach(i => i.oninput = draw);
+    function save() { let a=document.createElement('a'); a.download='kuu_bg.png'; a.href=c.toDataURL(); a.click(); }
+    draw();
+</script>
 </body>
 </html>
