@@ -3,184 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V5</title>
+    <title>뀨 kuu 🎀 Studio V6</title>
     <style>
-        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --card: rgba(255,255,255,0.8); }
-        * { box-sizing: border-box; font-family: "PingFang TC", "Quicksand", "Microsoft JhengHei", sans-serif; -webkit-tap-highlight-color: transparent; }
-        
+        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; }
+        * { box-sizing: border-box; font-family: "Quicksand", "PingFang TC", sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; color: var(--txt); }
         
-        /* 頂部固定預覽區 */
-        .header-sticky { position: sticky; top: 0; width: 100%; background: var(--p); z-index: 1000; padding: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-        .brand { font-size: 1.2rem; font-weight: bold; color: var(--a); margin-bottom: 10px; }
-        canvas { background: #fff; border-radius: 12px; box-shadow: 0 8px 25px rgba(255,183,197,0.3); width: 180px; height: auto; border: 4px solid white; transition: 0.3s; }
-        canvas:active { transform: scale(1.1); } /* 點擊預覽圖稍微放大 */
+        .header-sticky { position: sticky; top: 0; width: 100%; background: var(--p); z-index: 1000; padding: 10px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.5); }
+        canvas { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 180px; height: auto; border: 5px solid white; }
 
-        /* 下方滾動控制區 */
-        .scroll-content { width: 100%; max-width: 450px; padding: 10px 20px 100px; display: flex; flex-direction: column; gap: 15px; }
+        .scroll-content { width: 100%; max-width: 450px; padding: 15px 15px 120px; display: flex; flex-direction: column; gap: 12px; }
         
-        /* 快速選色圓點 */
-        .color-presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .c-dot { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; position: relative; }
-        .c-dot:active { transform: scale(0.9); }
+        .presets-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; background: white; padding: 12px; border-radius: 20px; }
+        .c-dot { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
         .c-dot.active { border-color: var(--txt); }
 
-        .panel { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .p-h { padding: 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .p-h h3 { margin: 0; font-size: 0.95rem; font-weight: bold; color: var(--txt); display: flex; align-items: center; gap: 8px; }
-        .p-b { padding: 0 18px 18px; display: none; border-top: 1px solid #fff5f7; }
-        .panel.open .p-b { display: block; animation: slideDown 0.3s ease-out; }
+        .panel { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .p-h { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .p-h h3 { margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .p-b { padding: 0 15px 15px; display: none; border-top: 1px solid #fff5f7; }
+        .panel.open .p-b { display: block; }
 
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* UI 元件 */
-        .row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-        .label { font-size: 0.8rem; color: #a18d90; width: 65px; }
-        input[type="color"] { border: none; width: 35px; height: 35px; background: none; cursor: pointer; }
-        input[type="range"] { flex: 1; height: 4px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--a); border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input[type="text"] { flex: 1; padding: 8px 12px; border: 1px solid #fce4e8; border-radius: 10px; color: var(--txt); font-size: 1rem; outline: none; }
+        .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        .label { font-size: 0.75rem; color: #a18d90; width: 60px; }
+        input[type="color"] { border: none; width: 32px; height: 32px; background: none; cursor: pointer; padding: 0; }
+        input[type="range"] { flex: 1; height: 4px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--a); border-radius: 50%; border: 2px solid white; }
+        input[type="text"] { flex: 1; padding: 6px 10px; border: 1px solid #fce4e8; border-radius: 8px; font-size: 0.9rem; }
         
-        .toggle-btn { font-size: 0.75rem; border: 1px solid var(--a); color: var(--a); background: white; padding: 5px 12px; border-radius: 15px; cursor: pointer; }
-        .toggle-btn.active { background: var(--a); color: white; }
-        input[type="checkbox"] { transform: scale(1.3); accent-color: var(--a); }
+        .btn-mini { padding: 4px 10px; border-radius: 12px; border: 1px solid var(--a); background: white; color: var(--a); font-size: 0.7rem; cursor: pointer; }
+        .btn-mini.active { background: var(--a); color: white; }
+        .invert-btn { background: #f0f0f0; border: none; padding: 8px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; width: 100%; margin-top: 10px; color: var(--txt); font-weight: bold; }
 
-        .dl-bar { position: fixed; bottom: 20px; width: calc(100% - 40px); max-width: 410px; z-index: 1001; }
-        .dl-btn { background: var(--a); color: white; border: none; padding: 16px; border-radius: 30px; width: 100%; font-size: 1.1rem; font-weight: bold; box-shadow: 0 10px 20px rgba(255,183,197,0.4); cursor: pointer; }
+        .footer-dl { position: fixed; bottom: 15px; width: calc(100% - 30px); max-width: 420px; z-index: 1001; }
+        .dl-btn { background: var(--a); color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 1rem; font-weight: bold; box-shadow: 0 8px 20px rgba(255,183,197,0.4); }
     </style>
 </head>
 <body>
 
     <div class="header-sticky">
-        <div class="brand">뀨 kuu Studio V5 🎀</div>
         <canvas id="cv" width="1080" height="1920"></canvas>
     </div>
 
     <div class="scroll-content">
-        <div class="label" style="margin-left:5px">氛圍色盤 (Presets)</div>
-        <div class="color-presets" id="preset-container"></div>
+        <div class="presets-grid" id="presets"></div>
 
         <div class="panel open">
-            <div class="p-h"><h3>🎨 自定義顏色</h3></div>
+            <div class="p-h"><h3>🎨 核心色彩控制</h3></div>
             <div class="p-b">
-                <div class="row"><input type="color" id="bg" value="#ffeef2"><span class="label">背景底色</span></div>
-                <div class="row"><input type="color" id="pc" value="#ffffff"><span class="label">圖案顏色</span></div>
+                <div class="row"><input type="color" id="bg" value="#ffeef2" oninput="draw()"><span class="label">背景底色</span></div>
+                <div class="row"><input type="color" id="pc" value="#ffffff" oninput="updateAllColors()"><span class="label">全局圖案色</span></div>
+                <button class="invert-btn" onclick="invertColors()">🔄 一鍵交換底色與圖案色</button>
             </div>
         </div>
 
-        <div class="panel">
-            <div class="p-h"><h3><input type="checkbox" id="emoji_on"> ✨ Emoji 圖案</h3><span onclick="toggleP(this)">▼</span></div>
-            <div class="p-b">
-                <div class="row"><span class="label">輸入符號</span><input type="text" id="emoji_val" value="🎀" placeholder="貼上你喜歡的emoji"></div>
-                <div class="row"><span class="label">大小</span><input type="range" id="emoji_sz" min="10" max="150" value="60"></div>
-                <div class="row"><span class="label">間距</span><input type="range" id="emoji_sp" min="50" max="400" value="150"></div>
-            </div>
-        </div>
-
-        <div id="shape-list"></div>
+        <div id="shape-configs"></div>
     </div>
 
-    <div class="dl-bar">
-        <button class="dl-btn" onclick="save()">儲存背景圖 (.png)</button>
-    </div>
+    <div class="footer-dl"><button class="dl-btn" onclick="save()">儲存背景圖 (.png)</button></div>
 
 <script>
-    const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
-    
-    // 15 種討論出的韓系色卡
-    const presets = [
-        {b:'#E2E9EE', p:'#B1C1CC'}, {b:'#FFEEF2', p:'#FFB7C5'}, {b:'#D6D6D6', p:'#BDBDBD'}, 
-        {b:'#E8F6F8', p:'#C2E2E8'}, {b:'#8E9DA8', p:'#B1C1CC'}, {b:'#FCE4E8', p:'#FFB7C5'}, 
-        {b:'#EBDDE2', p:'#A18D90'}, {b:'#F9D5E5', p:'#FFB7C5'}, {b:'#F0F0F0', p:'#D6D6D6'}, 
-        {b:'#F5EBE0', p:'#D5BDAF'}, {b:'#E2E9EE', p:'#8E9DA8'}, {b:'#FFEEF2', p:'#FCE4E8'},
-        {b:'#F0F0F0', p:'#BDBDBD'}, {b:'#E8F6F8', p:'#B1C1CC'}, {b:'#D6D6D6', p:'#A18D90'}
+    const c = g('cv'), ctx = c.getContext('2d');
+    function g(id){return document.getElementById(id)};
+
+    // 15 種優化色盤（加入白色替代）
+    const colors = [
+        {b:'#E2E9EE', p:'#FFFFFF'}, {b:'#FFEEF2', p:'#FFFFFF'}, {b:'#FFFFFF', p:'#BDBDBD'}, 
+        {b:'#E8F6F8', p:'#FFFFFF'}, {b:'#8E9DA8', p:'#E2E9EE'}, {b:'#FCE4E8', p:'#FFFFFF'}, 
+        {b:'#EBDDE2', p:'#FFFFFF'}, {b:'#F9D5E5', p:'#FFFFFF'}, {b:'#FFFFFF', p:'#D6D6D6'}, 
+        {b:'#F5EBE0', p:'#FFFFFF'}, {b:'#E2E9EE', p:'#8E9DA8'}, {b:'#FFEEF2', p:'#FFB7C5'},
+        {b:'#F0F0F0', p:'#FFFFFF'}, {b:'#E8F6F8', p:'#B1C1CC'}, {b:'#D6D6D6', p:'#FFFFFF'}
     ];
 
     const shapes = [
-        { id: 'dots', name: '⚪ 質感波點', sz: 15, sp: 80, on: true },
-        { id: 'stripes', name: '➖ 簡約條紋', sz: 10, sp: 60, on: false, ang: 315 }
+        { id: 'emoji', name: '✨ Emoji 圖案', type: 'emoji', sz: 60, sp: 150, on: true, val: '🎀' },
+        { id: 'dots', name: '⚪ 質感波點', type: 'draw', sz: 15, sp: 80, on: false },
+        { id: 'stars', name: '⭐ 閃亮星星', type: 'draw', sz: 20, sp: 100, on: false },
+        { id: 'stripes', name: '➖ 簡約條紋', type: 'draw', sz: 10, sp: 60, on: false, ang: 315 }
     ];
 
-    // 初始化介面
-    const pc = g('preset-container');
-    presets.forEach((s, i) => {
-        pc.insertAdjacentHTML('beforeend', `<div class="c-dot" style="background: linear-gradient(135deg, ${s.b} 50%, ${s.p} 50%)" onclick="setPreset(${i})"></div>`);
-    });
-
+    // 初始化面板
+    const sc = g('shape-configs');
     shapes.forEach(s => {
-        const h = `
-        <div class="panel">
-            <div class="p-h"><h3><input type="checkbox" id="${s.id}_on" ${s.on?'checked':''}> ${s.name}</h3><span onclick="toggleP(this)">▼</span></div>
-            <div class="p-b">
-                <div class="row"><span class="label">大小</span><input type="range" id="${s.id}_sz" min="2" max="100" value="${s.sz}"></div>
-                <div class="row"><span class="label">間距</span><input type="range" id="${s.id}_sp" min="30" max="400" value="${s.sp}"></div>
-                ${s.id==='stripes'?`<div class="row"><span class="label">角度</span><input type="range" id="stripes_an" min="0" max="360" value="${s.ang}"></div>`:''}
+        sc.insertAdjacentHTML('beforeend', `
+        <div class="panel" id="p_${s.id}">
+            <div class="p-h" onclick="tglP('${s.id}')">
+                <h3><input type="checkbox" id="${s.id}_on" ${s.on?'checked':''} onclick="event.stopPropagation();draw()"> ${s.name}</h3>
+                <span>▼</span>
             </div>
-        </div>`;
-        g('shape-list').insertAdjacentHTML('beforeend', h);
+            <div class="p-b">
+                <div class="row"><input type="color" id="${s.id}_c" value="#ffffff" oninput="draw()"><span class="label">專屬顏色</span></div>
+                ${s.id==='emoji'?`<div class="row"><span class="label">輸入符號</span><input type="text" id="emoji_v" value="${s.val}" oninput="draw()"></div>`:''}
+                <div class="row"><span class="label">大小</span><input type="range" id="${s.id}_sz" min="5" max="150" value="${s.sz}" oninput="draw()"></div>
+                <div class="row"><span class="label">間距</span><input type="range" id="${s.id}_sp" min="30" max="400" value="${s.sp}" oninput="draw()"></div>
+                ${s.id==='stripes'?`<div class="row"><span class="label">角度</span><input type="range" id="st_an" min="0" max="360" value="${s.ang}" oninput="draw()"></div>`:''}
+            </div>
+        </div>`);
     });
 
-    function toggleP(el) { el.closest('.panel').classList.toggle('open'); }
-    function setPreset(i) {
-        g('bg').value = presets[i].b; g('pc').value = presets[i].p;
-        document.querySelectorAll('.c-dot').forEach(d => d.classList.remove('active'));
-        document.querySelectorAll('.c-dot')[i].classList.add('active');
-        draw();
+    const ps = g('presets');
+    colors.forEach((c, i) => {
+        ps.insertAdjacentHTML('beforeend', `<div class="c-dot" style="background:linear-gradient(135deg,${c.b} 50%,${c.p} 50%)" onclick="applyColor(${i})"></div>`);
+    });
+
+    function tglP(id){g('p_'+id).classList.toggle('open')}
+    function applyColor(i){
+        g('bg').value=colors[i].b; g('pc').value=colors[i].p;
+        updateAllColors();
+    }
+    function updateAllColors(){
+        const c=g('pc').value; shapes.forEach(s=>g(s.id+'_c').value=c); draw();
+    }
+    function invertColors(){
+        const b=g('bg').value, p=g('pc').value;
+        g('bg').value=p; g('pc').value=b; updateAllColors();
+    }
+
+    function drawStar(x, y, r, c) {
+        ctx.fillStyle=c; ctx.beginPath();
+        for(let i=0; i<5; i++){
+            ctx.lineTo(Math.cos((18+i*72)/180*Math.PI)*r+x, -Math.sin((18+i*72)/180*Math.PI)*r+y);
+            ctx.lineTo(Math.cos((54+i*72)/180*Math.PI)*(r*0.4)+x, -Math.sin((54+i*72)/180*Math.PI)*(r*0.4)+y);
+        }
+        ctx.closePath(); ctx.fill();
     }
 
     function draw() {
-        const w=c.width, h=c.height, color=g('pc').value;
+        const w=c.width, h=c.height;
         ctx.fillStyle=g('bg').value; ctx.fillRect(0,0,w,h);
 
-        // 1. 條紋繪製
-        if(g('stripes_on').checked) {
-            ctx.strokeStyle=color; ctx.lineWidth=g('stripes_sz').value;
-            let sp=+g('stripes_sp').value, an=+g('stripes_an').value * Math.PI/180;
-            for(let i=-2500; i<2500; i+=sp) {
-                ctx.beginPath(); ctx.moveTo(i*Math.cos(an)-2500*Math.sin(an), i*Math.sin(an)+2500*Math.cos(an));
-                ctx.lineTo(i*Math.cos(an)+2500*Math.sin(an), i*Math.sin(an)-2500*Math.cos(an)); ctx.stroke();
+        // 1. 條紋 (最底層)
+        if(g('stripes_on').checked){
+            ctx.strokeStyle=g('stripes_c').value; ctx.lineWidth=g('stripes_sz').value;
+            let sp=+g('stripes_sp').value, an=+g('st_an').value*Math.PI/180;
+            for(let i=-2500;i<2500;i+=sp){
+                ctx.beginPath();ctx.moveTo(i*Math.cos(an)-2500*Math.sin(an),i*Math.sin(an)+2500*Math.cos(an));
+                ctx.lineTo(i*Math.cos(an)+2500*Math.sin(an),i*Math.sin(an)-2500*Math.cos(an));ctx.stroke();
             }
         }
-
-        // 2. 波點繪製
-        if(g('dots_on').checked) {
-            ctx.fillStyle=color; let sz=+g('dots_sz').value, sp=+g('dots_sp').value;
-            for(let y=0; y<h+sp; y+=sp) for(let x=0; x<w+sp; x+=sp) {
-                let sh = (Math.floor(y/sp)%2==0)?0:sp/2;
-                ctx.beginPath(); ctx.arc(x+sh,y,sz,0,7); ctx.fill();
+        // 2. 波點
+        if(g('dots_on').checked){
+            ctx.fillStyle=g('dots_c').value; let sz=+g('dots_sz').value, sp=+g('dots_sp').value;
+            for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
+                let sh=(Math.floor(y/sp)%2==0)?0:sp/2; ctx.beginPath();ctx.arc(x+sh,y,sz,0,7);ctx.fill();
             }
         }
-
-        // 3. Emoji 變色去色繪製 (核心黑科技)
-        if(g('emoji_on').checked) {
-            const char = g('emoji_val').value || '🎀';
-            const sz = +g('emoji_sz').value, sp = +g('emoji_sp').value;
-            
-            // 建立離屏畫布處理變色
-            const off = document.createElement('canvas');
-            off.width = sz * 1.5; off.height = sz * 1.5;
-            const octx = off.getContext('2d');
-            
-            octx.font = `${sz}px serif`;
-            octx.textAlign = 'center'; octx.textBaseline = 'middle';
-            octx.fillText(char, off.width/2, off.height/2);
-
-            // 變色處理：只保留形狀
-            octx.globalCompositeOperation = 'source-in';
-            octx.fillStyle = color;
-            octx.fillRect(0,0,off.width,off.height);
-
-            // 平鋪到主畫布
-            for(let y=0; y<h+sp; y+=sp) for(let x=0; x<w+sp; x+=sp) {
-                let sh = (Math.floor(y/sp)%2==0)?0:sp/2;
-                ctx.drawImage(off, x+sh-off.width/2, y-off.height/2);
+        // 3. 星星
+        if(g('stars_on').checked){
+            let sz=+g('stars_sz').value, sp=+g('stars_sp').value, cl=g('stars_c').value;
+            for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
+                let sh=(Math.floor(y/sp)%2==0)?0:sp/2; drawStar(x+sh,y,sz,cl);
+            }
+        }
+        // 4. Emoji
+        if(g('emoji_on').checked){
+            const val=g('emoji_v').value||'🎀', sz=+g('emoji_sz').value, sp=+g('emoji_sp').value, cl=g('emoji_c').value;
+            const off=document.createElement('canvas'); off.width=sz*1.5; off.height=sz*1.5;
+            const octx=off.getContext('2d'); octx.font=sz+'px serif'; octx.textAlign='center'; octx.textBaseline='middle';
+            octx.fillText(val,off.width/2,off.height/2);
+            octx.globalCompositeOperation='source-in'; octx.fillStyle=cl; octx.fillRect(0,0,off.width,off.height);
+            for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
+                let sh=(Math.floor(y/sp)%2==0)?0:sp/2; ctx.drawImage(off,x+sh-off.width/2,y-off.height/2);
             }
         }
     }
 
-    document.querySelectorAll('input').forEach(i => i.oninput = draw);
-    function save() { let a=document.createElement('a'); a.download='kuu_v5.png'; a.href=c.toDataURL(); a.click(); }
-    setPreset(1); // 預設草莓粉
+    function save(){let a=document.createElement('a'); a.download='kuu_v6.png'; a.href=c.toDataURL(); a.click()}
+    applyColor(1);
 </script>
 </body>
 </html>
