@@ -3,87 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V7 - 圖層與選色大升級</title>
+    <title>뀨 kuu 🎀 Studio V7.1</title>
     <style>
-        /* 1. 核心軟萌樣式與圓體字 */
-        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --card: rgba(255,255,255,0.9); --radius: 20px; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+        :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
         body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; height: 100vh; overflow: hidden; color: var(--txt); }
-        h2, h3 { margin: 0; font-weight: bold; color: var(--txt); }
 
-        /* 2. 沉浸式排版 - 預覽區置中，控制區置底 */
-        .preview-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; position: relative; }
-        .brand { font-size: 1.3rem; font-weight: bold; color: var(--a); position: absolute; top: 15px; text-shadow: 1px 1px white; }
-        canvas { background: #fff; border-radius: 12px; box-shadow: 0 10px 40px rgba(255,183,197,0.3); max-height: 70vh; max-width: 90%; border: 5px solid white; height: auto; }
+        /* 縮小預覽區，騰出操作空間 */
+        .preview-area { flex: 0 0 48vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; width: 100%; position: relative; z-index: 10; }
+        .brand { font-size: 1.1rem; font-weight: bold; color: var(--a); margin-bottom: 5px; }
+        canvas { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(255,183,197,0.3); max-height: 40vh; max-width: 85%; border: 4px solid white; height: auto; }
 
-        /* 底部抽屜式控制區 */
-        .controls-drawer { width: 100%; max-width: 450px; background: white; border-radius: var(--radius) var(--radius) 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 45vh; min-height: 250px;}
-        .drawer-h { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fff5f7; cursor: pointer; }
-        .drawer-b { flex: 1; overflow-y: auto; padding: 15px 20px 80px; display: flex; flex-direction: column; gap: 12px; }
+        /* 控制抽屜 */
+        .controls-drawer { flex: 1; width: 100%; max-width: 450px; background: white; border-radius: var(--radius) var(--radius) 0 0; display: flex; flex-direction: column; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); position: relative; z-index: 20; overflow: hidden;}
+        .drawer-h { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fff5f7; }
+        .drawer-b { flex: 1; overflow-y: auto; padding: 15px 20px 100px; display: flex; flex-direction: column; gap: 12px; }
 
-        /* 圖層與面板 */
-        .layer-box { display: flex; flex-direction: column; gap: 10px; }
-        .panel { background: #fef8f9; border-radius: var(--radius); overflow: hidden; border: 1px solid #fff0f3; }
+        /* 面板與 UI */
+        .panel { background: #fef8f9; border-radius: var(--radius); overflow: hidden; border: 1px solid #fff0f3; margin-bottom: 5px; }
         .p-h { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .p-h h3 { font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .p-h h3 { font-size: 0.85rem; margin: 0; display: flex; align-items: center; gap: 8px; }
         .p-b { padding: 0 15px 15px; display: none; border-top: 1px solid #fff5f7; }
-        .panel.open .p-b { display: block; animation: slideDown 0.3s ease-out; }
+        .panel.open .p-b { display: block; }
 
-        /* UI 元件樣式 */
         .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-        .label { font-size: 0.75rem; color: #a18d90; width: 65px; text-align: right;}
-        input[type="range"] { flex: 1; height: 5px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; background: var(--a); border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input[type="text"], .select-input { flex: 1; padding: 8px; border: 1px solid #fce4e8; border-radius: 12px; color: var(--txt); font-size: 0.9rem; outline: none; background: white;}
-        .select-input { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .label { font-size: 0.75rem; color: #a18d90; width: 70px; }
+        input[type="range"] { flex: 1; height: 5px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--a); border-radius: 50%; border: 3px solid white; }
+        input[type="text"], .select-input { flex: 1; padding: 8px 12px; border: 1px solid #fce4e8; border-radius: 12px; font-size: 0.85rem; outline: none; background: white; }
 
-        /* 可愛自定義選色球 */
-        .kuu-color-btn { width: 35px; height: 35px; border-radius: 12px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
-        .kuu-color-btn:active { transform: scale(0.9); }
-
-        /* 圖層按鈕與切換 */
-        .layer-ctrl { display: flex; gap: 10px; margin-bottom: 10px; }
-        .btn-kuu { flex: 1; background: var(--p); color: var(--a); border: 2px solid var(--a); padding: 10px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 0.9rem; text-align: center;}
-        .btn-kuu:active { transform: translateY(2px); }
-        .toggle-btn { padding: 5px 12px; border-radius: 12px; border: 1px solid var(--a); font-size: 0.75rem; cursor: pointer; background: white; color: var(--a); transition: 0.2s; }
+        .kuu-color-btn { width: 32px; height: 32px; border-radius: 10px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        .btn-kuu { background: var(--p); color: var(--a); border: 2px solid var(--a); padding: 8px 15px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .toggle-btn { padding: 4px 10px; border-radius: 10px; border: 1px solid var(--a); font-size: 0.7rem; cursor: pointer; background: white; color: var(--a); }
         .toggle-btn.active { background: var(--a); color: white; }
 
-        /* 儲存按鈕 */
-        .dl-bar { position: fixed; bottom: 15px; width: calc(100% - 30px); max-width: 420px; z-index: 1001; }
-        .dl-btn { background: var(--a); color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 1rem; font-weight: bold; box-shadow: 0 8px 25px rgba(255,183,197,0.4); cursor: pointer; transition: 0.3s;}
-        .dl-btn:active { transform: translateY(2px); box-shadow: 0 3px 10px rgba(255,183,197,0.3);}
+        /* 下載按鈕 */
+        .dl-bar { position: fixed; bottom: 15px; width: 100%; max-width: 420px; padding: 0 20px; z-index: 100; pointer-events: none; }
+        .dl-btn { pointer-events: auto; background: var(--a); color: white; border: none; padding: 14px; border-radius: 30px; width: 100%; font-size: 1rem; font-weight: bold; box-shadow: 0 5px 15px rgba(255,183,197,0.4); }
 
-        /* 選色器與圖層遮罩 */
-        .kuu-pop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .kuu-pop.open { display: flex; animation: kuuPopIn 0.3s ease-out; }
-        @keyframes kuuPopIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .kuu-pop-content { background: white; width: 90%; max-width: 320px; border-radius: var(--radius); padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 12px; border: 3px solid var(--a); }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        /* 選色器彈窗 - 修復 pointer-events */
+        .kuu-pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .kuu-pop.open { display: flex; }
+        .kuu-pop-content { background: white; width: 85%; max-width: 300px; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; }
+        .presets-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 5px 0; }
     </style>
 </head>
 <body>
 
     <div class="preview-area">
-        <div class="brand">뀨 kuu Studio V7 🎀</div>
+        <div class="brand">뀨 kuu Studio V7.1 🎀</div>
         <canvas id="cv" width="1080" height="1920"></canvas>
     </div>
 
     <div class="controls-drawer">
-        <div class="drawer-h"><h3>🛠️ Kuu 畫布圖層 Layer Studio</h3><span>▼</span></div>
+        <div class="drawer-h"><h3>🛠️ 圖層管理 Layer Studio</h3></div>
         <div class="drawer-b">
-            <div class="panel">
-                <div class="p-h"><h3>🎨 核心色彩控制</h3></div>
+            <div class="panel open">
+                <div class="p-h"><h3>🎨 畫布底色</h3></div>
                 <div class="p-b">
-                    <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景底色</span></div>
+                    <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景底色</span> <button class="toggle-btn" onclick="invertColors()">🔄 反轉</button></div>
                 </div>
             </div>
 
-            <div class="layer-ctrl">
-                <div class="btn-kuu" onclick="addLayer()">➕ 新增圖案圖層</div>
-                <div class="btn-kuu" style="border-color: #fca; color: #fca" onclick="invertColors()">🔄 一鍵反轉底色</div>
+            <div style="display:flex; gap:10px; margin-bottom:5px;">
+                <button class="btn-kuu" style="flex:1" onclick="addLayer()">➕ 新增圖層</button>
             </div>
             
-            <div class="layer-box" id="layers-container"></div>
+            <div id="layers-container"></div>
         </div>
     </div>
 
@@ -91,18 +77,16 @@
 
     <div class="kuu-pop" id="pop-picker">
         <div class="kuu-pop-content">
-            <h3 style="text-align: center; color:var(--txt)">Kuu 彩虹選色</h3>
-            <input type="text" id="color-hex" value="#ffeef2" placeholder="#RRGGBB" oninput="draw()">
-            <input type="range" id="color-opacity" min="0" max="1" step="0.01" value="1">
-            <label style="font-size: 0.7rem; color: #a18d90; text-align: center; display: block;">討論會預設色 (DISCUSSION COLORS)</label>
-            <div class="Presets-grid" id="pop-presets"></div>
-            <button class="btn-kuu" style="width:100%" onclick="closePop('pop-picker')">確認選色</button>
+            <h3 style="text-align: center; font-size:1rem;">Kuu 自定義選色</h3>
+            <input type="text" id="color-hex" value="#ffeef2">
+            <div class="presets-grid" id="pop-presets"></div>
+            <button class="btn-kuu" onclick="closePop('pop-picker')">完成</button>
         </div>
     </div>
 
     <div class="kuu-pop" id="pop-type">
         <div class="kuu-pop-content">
-            <h3 style="text-align: center; color:var(--txt)">選擇圖案種類</h3>
+            <h3 style="text-align: center; font-size:1rem;">選擇圖案</h3>
             <button class="btn-kuu" onclick="selectType('emoji')">✨ Emoji</button>
             <button class="btn-kuu" onclick="selectType('dots')">⚪ 波點</button>
             <button class="btn-kuu" onclick="selectType('stars')">⭐ 星星</button>
@@ -112,200 +96,107 @@
 
 <script>
     const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
-    
-    // 🎨 討論出的韓系色卡 (V7.0 優化對比度版)
-    const discussionColors = [
-        '#E2E9EE', '#FFEEF2', '#D6D6D6', '#E8F6F8', '#8E9DA8', '#FCE4E8', '#EBDDE2', '#F9D5E5', 
-        '#F0F0F0', '#F5EBE0', '#D5BDAF', '#FFFFFF', '#B1C1CC', '#FFB7C5', '#D3D3D3'
-    ];
+    const discussionColors = ['#E2E9EE', '#FFEEF2', '#D6D6D6', '#E8F6F8', '#8E9DA8', '#FCE4E8', '#EBDDE2', '#F9D5E5', '#F0F0F0', '#F5EBE0', '#D5BDAF', '#FFFFFF', '#B1C1CC', '#FFB7C5', '#D3D3D3'];
 
     let bgColor = '#ffeef2';
     let layers = [
-        { id: 1, type: 'emoji', on: true, color: '#ffb7c5', val: '🎀', sz: 70, sp: 160, fill: true },
-        { id: 2, type: 'emoji', on: true, color: '#ffffff', val: '🍀', sz: 60, sp: 180, fill: true },
-        { id: 3, type: 'emoji', on: false, color: '#d5bdaf', val: '💗', sz: 80, sp: 200, fill: true }
+        { id: Date.now(), type: 'emoji', on: true, color: '#ffffff', val: '🎀', sz: 75, sp: 180, fill: true }
     ];
 
-    // 初始化介面
-    const layerContainer = g('layers-container');
-    function initLayersUI() {
-        layerContainer.innerHTML = '';
-        layers.forEach((l, i) => {
-            let shapeName = ''; let shapeIcon = '';
-            if(l.type === 'emoji') { shapeName = '✨ Emoji'; shapeIcon = l.val; }
-            if(l.type === 'dots') { shapeName = '⚪ 波點'; shapeIcon = '⚪'; }
-            if(l.type === 'stars') { shapeName = '⭐ 星星'; shapeIcon = '⭐'; }
-            if(l.type === 'stripes') { shapeName = '➖ 條紋'; shapeIcon = '➖'; }
-            
+    function initUI() {
+        const container = g('layers-container');
+        container.innerHTML = '';
+        layers.forEach(l => {
             const html = `
-            <div class="panel layer-panel" id="panel-${l.id}">
+            <div class="panel" id="panel-${l.id}">
                 <div class="p-h" onclick="toggleP(${l.id})">
-                    <h3><input type="checkbox" id="on_${l.id}" ${l.on?'checked':''} onclick="event.stopPropagation();updateLayer(${l.id}, 'on')"> Layer ${l.id} - ${shapeName} (${shapeIcon})</h3>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="toggle-btn" style="border-color:#f8c; color:#f8c" onclick="event.stopPropagation();duplicateLayer(${l.id})">👯</button>
-                        <button class="toggle-btn" style="border-color:#ccc; color:#ccc" onclick="event.stopPropagation();deleteLayer(${l.id})">🗑️</button>
+                    <h3><input type="checkbox" ${l.on?'checked':''} onclick="event.stopPropagation(); toggleLayer(${l.id})"> ${l.type.toUpperCase()}</h3>
+                    <div style="display:flex; gap:8px;">
+                        <button class="toggle-btn" onclick="event.stopPropagation(); deleteLayer(${l.id})">🗑️</button>
                         <span>▼</span>
                     </div>
                 </div>
                 <div class="p-b">
-                    <div class="row">
-                        <div class="label">圖層圖案</div>
-                        <div class="select-input" id="type_${l.id}" onclick="event.stopPropagation();openShapePop(${l.id})">${shapeName}<span>▼</span></div>
-                    </div>
-                    <div class="row"><div class="kuu-color-btn" id="color_${l.id}" onclick="event.stopPropagation();openPicker(${l.id})"></div><span class="label">圖層專屬色</span></div>
-                    ${l.type==='emoji'?`<div class="row"><span class="label">Emoji 鏤空</span><button class="toggle-btn ${l.fill?'':'active'}" id="fill_${l.id}" onclick="event.stopPropagation();updateLayer(${l.id}, 'fill')">${l.fill?'鏤空 OFF':'鏤空 ON'}</button></div>
-                    <div class="row"><span class="label">貼上符號</span><input type="text" id="val_${l.id}" value="${l.val}" placeholder="貼上你喜歡的emoji" oninput="draw()"></div>` : ''}
-                    <div class="row"><span class="label">大小 / 粗細</span><input type="range" id="sz_${l.id}" min="5" max="150" value="${l.sz}" oninput="draw()"></div>
-                    <div class="row"><span class="label">密集程度</span><input type="range" id="sp_${l.id}" min="30" max="400" value="${s.sp}" oninput="draw()"></div>
-                    ${l.type==='stripes'?`<div class="row"><span class="label">角度</span><input type="range" id="ang_${l.id}" min="0" max="360" value="${l.ang}" oninput="draw()"></div>`:''}
+                    <div class="row"><span class="label">圖案種類</span><button class="select-input" onclick="openTypePop(${l.id})">${l.type}</button></div>
+                    <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">專屬顏色</span></div>
+                    ${l.type==='emoji'?`<div class="row"><span class="label">Emoji</span><input type="text" value="${l.val}" oninput="updateVal(${l.id}, this.value)"></div>
+                    <div class="row"><span class="label">模式</span><button class="toggle-btn ${l.fill?'active':''}" onclick="toggleFill(${l.id})">${l.fill?'填充':'鏤空'}</button></div>`:''}
+                    <div class="row"><span class="label">大小</span><input type="range" min="5" max="200" value="${l.sz}" oninput="updateParam(${l.id}, 'sz', this.value)"></div>
+                    <div class="row"><span class="label">間距</span><input type="range" min="30" max="500" value="${l.sp}" oninput="updateParam(${l.id}, 'sp', this.value)"></div>
                 </div>
             </div>`;
-            layerContainer.insertAdjacentHTML('beforeend', html);
-            updateLayerBtnColor(l.id, l.color);
+            container.insertAdjacentHTML('beforeend', html);
         });
         g('bg_cb').style.background = bgColor;
-        g('color-hex').value = bgColor;
     }
 
-    // 介面控制
+    // 邏輯修復
     function toggleP(id) { g('panel-'+id).classList.toggle('open'); }
-    function openPop(popId) { g(popId).classList.add('open'); }
-    function closePop(popId) { g(popId).classList.remove('open'); draw(); }
+    function addLayer() { layers.push({ id: Date.now(), type: 'dots', on: true, color: '#ffffff', val: '🍀', sz: 15, sp: 80, fill: true }); initUI(); draw(); }
+    function deleteLayer(id) { layers = layers.filter(l => l.id !== id); initUI(); draw(); }
+    function toggleLayer(id) { const l = layers.find(x => x.id === id); l.on = !l.on; draw(); }
+    function toggleFill(id) { const l = layers.find(x => x.id === id); l.fill = !l.fill; initUI(); draw(); }
+    function updateVal(id, v) { layers.find(x => x.id === id).val = v; draw(); }
+    function updateParam(id, key, v) { layers.find(x => x.id === id)[key] = +v; draw(); }
 
-    // 🎨 Kuu 自定義選色器邏輯
-    let pickerType = ''; // 記錄是哪個圖層打開選色器 (1, 2, 3, 'bg')
-    function openPicker(type) {
-        pickerType = type;
-        const color = type === 'bg' ? bgColor : layers.find(l => l.id === type).color;
-        g('color-hex').value = color;
-        openPop('pop-picker');
-    }
-    g('color-hex').oninput = function() {
-        const hex = this.value;
-        if(pickerType === 'bg') bgColor = hex;
-        else layers.find(l => l.id === pickerType).color = hex;
-        initLayersUI(); // 更新介面上的顏色球
-    };
-
-    // 初始化選色器的討論色盤
-    const popPresetsContainer = g('pop-presets');
-    discussionColors.forEach(c => {
-        popPresetsContainer.insertAdjacentHTML('beforeend', `<div class="kuu-color-btn Preset-dot" style="background:${c}" onclick="setPickerColor('${c}')"></div>`);
-    });
-    function setPickerColor(hex) { g('color-hex').value = hex; g('color-hex').dispatchEvent(new Event('input')); }
-
-    // 📚 多圖層圖案選擇邏輯
-    let shapePopId = '';
-    function openShapePop(layerId) { shapePopId = layerId; openPop('pop-type'); }
-    function selectType(type) {
-        const layer = layers.find(l => l.id === shapePopId);
-        layer.type = type;
-        closePop('pop-type'); initLayersUI(); draw();
-    }
-    
-    function deleteLayer(layerId) {
-        layers = layers.filter(l => l.id !== layerId);
-        initLayersUI(); draw();
+    // 色盤修復
+    let activeId = null;
+    function openPicker(id) { activeId = id; g('color-hex').value = (id==='bg'?bgColor:layers.find(x=>x.id===id).color); g('pop-picker').classList.add('open'); }
+    function closePop(id) { g(id).classList.remove('open'); draw(); }
+    function setPickerColor(c) { 
+        if(activeId === 'bg') bgColor = c; 
+        else layers.find(x => x.id === activeId).color = c;
+        g('color-hex').value = c; initUI(); draw(); 
     }
 
-    function addLayer() {
-        const lastId = layers.length > 0 ? layers[layers.length - 1].id : 0;
-        const newLayer = { id: lastId + 1, type: 'dots', on: true, color: discussionColors[lastId % 15], sz: 15, sp: 80, fill: true };
-        layers.push(newLayer);
-        initLayersUI(); draw(); toggleP(newLayer.id); // 自動展開新圖層
-    }
+    const presets = g('pop-presets');
+    discussionColors.forEach(c => presets.insertAdjacentHTML('beforeend', `<div class="kuu-color-btn" style="background:${c}" onclick="setPickerColor('${c}')"></div>`));
 
-    function updateLayer(layerId, key) {
-        const layer = layers.find(l => l.id === layerId);
-        if(key === 'on') layer.on = g('on_'+layerId).checked;
-        if(key === 'fill') {
-            layer.fill = !layer.fill; g('fill_'+layerId).classList.toggle('active');
-            g('fill_'+layerId).innerText = layer.fill ? '鏤空 OFF' : '鏤空 ON';
-        }
-        draw();
-    }
+    // 圖案切換修復
+    let typeTargetId = null;
+    function openTypePop(id) { typeTargetId = id; g('pop-type').classList.add('open'); }
+    function selectType(t) { layers.find(x => x.id === typeTargetId).type = t; closePop('pop-type'); initUI(); draw(); }
 
     function draw() {
-        const w=c.width, h=c.height;
-        ctx.fillStyle=bgColor; ctx.fillRect(0,0,w,h);
-
-        // 核心圖層疊加邏輯
+        ctx.fillStyle = bgColor; ctx.fillRect(0,0,c.width,c.height);
         layers.forEach(l => {
             if(!l.on) return;
-            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = 3;
-
-            // 1. 條紋
-            if(l.type === 'stripes') {
-                const sp=+g('sp_'+l.id).value, an=+g('ang_'+l.id).value * Math.PI/180;
-                ctx.lineWidth = +g('sz_'+l.id).value;
-                for(let i=-2500; i<2500; i+=sp) {
-                    ctx.beginPath(); ctx.moveTo(i*Math.cos(an)-2000*Math.sin(an), i*Math.sin(an)+2000*Math.cos(an));
-                    ctx.lineTo(i*Math.cos(an)+2000*Math.sin(an), i*Math.sin(an)-2000*Math.cos(an)); ctx.stroke();
-                }
-            }
-
-            // 2. 波點
+            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = l.sz * 0.1;
+            const sp = l.sp, sz = l.sz;
             if(l.type === 'dots') {
-                const sz=+g('sz_'+l.id).value, sp=+g('sp_'+l.id).value;
-                for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
+                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
+                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2; ctx.beginPath(); ctx.arc(x+sh,y,sz,0,7); ctx.fill();
+                }
+            } else if(l.type === 'stars') {
+                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
+                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2; drawStar(x+sh,y,sz);
+                }
+            } else if(l.type === 'emoji') {
+                ctx.font = `${sz}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
                     let sh=(Math.floor(y/sp)%2==0)?0:sp/2;
-                    ctx.beginPath(); ctx.arc(x+sh,y,sz,0,7); ctx.fill();
+                    if(l.fill) ctx.fillText(l.val, x+sh, y); else ctx.strokeText(l.val, x+sh, y);
                 }
-            }
-            
-            // 3. 星星
-            if(l.type === 'stars') {
-                const sz=+g('sz_'+l.id).value, sp=+g('sp_'+l.id).value;
-                for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
-                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2; drawStar(x+sh, y, sz);
-                }
-            }
-
-            // 4. ✨ Emoji 去色 / 鏤空邏輯
-            if(l.type === 'emoji') {
-                const char = g('val_'+l.id).value || '🎀';
-                const sz = +g('sz_'+l.id).value, sp = +g('sp_'+l.id).value, isFill = l.fill;
-                
-                // 建立去色離屏畫布
-                const off = document.createElement('canvas'); off.width = sz * 1.5; off.height = sz * 1.5;
-                const octx = off.getContext('2d');
-                octx.font = `${sz}px serif`; octx.textAlign = 'center'; octx.textBaseline = 'middle';
-                
-                // --- 去色填充模式 ---
-                if(isFill) {
-                    octx.fillText(char, off.width/2, off.height/2);
-                    octx.globalCompositeOperation = 'source-in'; // 鎖定形狀填色
-                    octx.fillStyle = l.color; octx.fillRect(0,0,off.width,off.height);
-                }
-                // --- 去色鏤空模式 (鎖邊) ---
-                else {
-                    octx.lineWidth = 3; octx.strokeStyle = l.color;
-                    octx.strokeText(char, off.width/2, off.height/2);
-                }
-
-                // 平鋪到畫布
-                for(let y=0;y<h+sp;y+=sp)for(let x=0;x<w+sp;x+=sp){
-                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2;
-                    ctx.drawImage(off, x+sh-off.width/2, y-off.height/2);
+            } else if(l.type === 'stripes') {
+                ctx.lineWidth = sz;
+                for(let i=-2000; i<3000; i+=sp) {
+                    ctx.beginPath(); ctx.moveTo(i, -100); ctx.lineTo(i-500, c.height+100); ctx.stroke();
                 }
             }
         });
     }
 
-    // 初始化星星繪製
-    function drawStar(x, y, sz) {
-        let r=sz, ir=sz*0.45, rot=Math.PI/2*3, step=Math.PI/5;
-        ctx.beginPath(); ctx.moveTo(x, y-r);
-        for(let i=0;i<5;i++){
-            ctx.lineTo(x+Math.cos(rot)*r, y+Math.sin(rot)*r); rot+=step;
-            ctx.lineTo(x+Math.cos(rot)*ir, y+Math.sin(rot)*ir); rot+=step;
+    function drawStar(x,y,r){
+        ctx.beginPath(); for(let i=0;i<5;i++){
+            ctx.lineTo(Math.cos((18+i*72)/180*Math.PI)*r+x, -Math.sin((18+i*72)/180*Math.PI)*r+y);
+            ctx.lineTo(Math.cos((54+i*72)/180*Math.PI)*(r*0.4)+x, -Math.sin((54+i*72)/180*Math.PI)*(r*0.4)+y);
         } ctx.closePath(); ctx.fill();
     }
-    function updateLayerBtnColor(id, hex){const btn=g('color_'+id); if(btn) btn.style.background=hex;}
-    function invertColors(){bgColor='#ffffff'; draw(); initLayersUI();}
-    function save(){let a=document.createElement('a'); a.download='kuu_v7.png'; a.href=c.toDataURL(); a.click();}
-    document.querySelectorAll('input').forEach(i => i.oninput = draw);
-    initLayersUI(); draw();
+    
+    function invertColors(){ const oldBg = bgColor; bgColor = layers[0].color; layers.forEach(l=>l.color=oldBg); initUI(); draw(); }
+    function save(){ const link = document.createElement('a'); link.download = 'kuu_v7_1.png'; link.href = c.toDataURL(); link.click(); }
+
+    initUI(); draw();
 </script>
 </body>
 </html>
