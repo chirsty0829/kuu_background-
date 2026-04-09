@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V7.3</title>
+    <title>뀨 kuu 🎀 Studio V7.4</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
         body { background-color: var(--p); display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden; color: var(--txt); }
 
-        /* 1. 成果區域縮小並居中 */
-        .preview-box { flex: 0 0 35vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(255,255,255,0.2); }
-        canvas { background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-height: 100%; max-width: 60%; border: 4px solid white; aspect-ratio: 9/16; }
+        /* 畫布縮小，兩側留白 */
+        .preview-box { flex: 0 0 35vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        canvas { background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-height: 100%; max-width: 55%; border: 3px solid white; aspect-ratio: 9/16; }
 
-        /* 2. 控制面板空間增大 */
-        .controls-main { flex: 1; overflow-y: auto; padding: 15px 20px 100px; display: flex; flex-direction: column; gap: 12px; background: white; border-radius: var(--radius) var(--radius) 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.02); }
+        /* 控制面板增加空間 */
+        .controls-main { flex: 1; overflow-y: auto; padding: 15px 20px 100px; display: flex; flex-direction: column; gap: 10px; background: white; border-radius: var(--radius) var(--radius) 0 0; }
         
         .panel { background: #fef8f9; border-radius: var(--radius); border: 1px solid #fff0f3; margin-bottom: 5px; }
         .p-h { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -25,20 +25,20 @@
         .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
         .label { font-size: 0.75rem; color: #a18d90; width: 60px; }
         input[type="range"] { flex: 1; height: 4px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--a); border-radius: 50%; border: 3px solid white; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--a); border-radius: 50%; border: 2px solid white; }
         
-        .kuu-color-btn { width: 30px; height: 30px; border-radius: 10px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        .btn-kuu { background: var(--p); color: var(--txt); border: 1px solid var(--a); padding: 8px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.8rem; text-align: center; flex:1; }
-        .toggle-btn { padding: 5px 12px; border-radius: 10px; border: 1px solid var(--a); font-size: 0.75rem; cursor: pointer; background: white; color: var(--a); }
+        .kuu-color-btn { width: 30px; height: 30px; border-radius: 10px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+        .btn-kuu { background: var(--p); color: var(--txt); border: 1px solid var(--a); padding: 8px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-align: center; flex:1; }
+        .del-btn { background: none; border: none; font-size: 1.2rem; color: #ccc; cursor: pointer; padding: 0 5px; }
+        .toggle-btn { padding: 5px 12px; border-radius: 10px; border: 1px solid var(--a); font-size: 0.7rem; cursor: pointer; background: white; color: var(--a); }
         .toggle-btn.active { background: var(--a); color: white; }
 
-        .footer-bar { position: fixed; bottom: 0; width: 100%; padding: 15px 20px; background: white; z-index: 100; display: flex; gap: 10px; }
+        .footer-bar { position: fixed; bottom: 0; width: 100%; padding: 15px 20px; background: white; z-index: 100; border-top: 1px solid #f0f0f0; }
         .dl-btn { background: var(--a); color: white; border: none; padding: 12px; border-radius: 20px; width: 100%; font-size: 1rem; font-weight: bold; cursor: pointer; }
 
-        /* 選色器 */
         .pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .pop.open { display: flex; }
-        .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; max-height: 150px; overflow-y: auto; }
     </style>
 </head>
@@ -49,10 +49,10 @@
     </div>
 
     <div class="controls-main">
-        <div class="panel open">
-            <div class="p-h"><h3>🎨 畫布與全域</h3></div>
+        <div class="panel">
+            <div class="p-h" onclick="tglPanel(this)"><h3>🎨 底色與全域設定</h3><span>▼</span></div>
             <div class="p-b">
-                <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">底色</span></div>
+                <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景底色</span></div>
             </div>
         </div>
 
@@ -79,23 +79,25 @@
 
 <script>
     const c=document.getElementById('cv'), ctx=c.getContext('2d'), g=id=>document.getElementById(id);
-    const presets = ['#FFEEF2','#E2E9EE','#D6D6D6','#E8F6F8','#8E9DA8','#FCE4E8','#F9D5E5','#FFFFFF','#B1C1CC','#FFB7C5','#F0F0F0','#D5BDAF','#EBDDE2','#F5EBE0','#BDBDBD','#C2E2E8','#A18D90','#FCE4E8','#B1C1CC','#FFB7C5'];
+    const presets = ['#FFEEF2','#E2E9EE','#D6D6D6','#E8F6F8','#8E9DA8','#FCE4E8','#F9D5E5','#FFFFFF','#B1C1CC','#FFB7C5','#F0F0F0','#D5BDAF','#EBDDE2','#F5EBE0','#EBDDE2','#BDBDBD','#C2E2E8','#A18D90','#D3D3D3','#F5EBE0'];
     
     let bgColor = '#ffeef2';
-    let layers = [{id:Date.now(), type:'emoji', on:true, color:'#ffffff', val:'🎀', sz:100, sp:200, fill:true}];
+    let layers = [{id:Date.now(), type:'emoji', on:true, color:'#ffffff', val:'🎀', sz:120, sp:220, fill:true}];
+
+    function tglPanel(el) { el.parentElement.classList.toggle('open'); }
 
     function initUI() {
         const list = g('layer-list'); list.innerHTML = '';
         layers.forEach(l => {
             list.insertAdjacentHTML('beforeend', `
-            <div class="panel" id="p-${l.id}">
-                <div class="p-h" onclick="this.parentElement.classList.toggle('open')">
+            <div class="panel open">
+                <div class="p-h" onclick="tglPanel(this)">
                     <h3><input type="checkbox" ${l.on?'checked':''} onclick="event.stopPropagation(); tglL(${l.id})"> ${l.type.toUpperCase()}</h3>
-                    <button class="toggle-btn" onclick="event.stopPropagation(); delL(${l.id})">🗑️</button>
+                    <button class="del-btn" onclick="event.stopPropagation(); delL(${l.id})">×</button>
                 </div>
                 <div class="p-b">
                     ${l.type==='emoji'?`<div class="row"><span class="label">符號</span><input type="text" value="${l.val}" oninput="upd(${l.id}, 'val', this.value)" style="flex:1; padding:5px; border:1px solid #eee; border-radius:8px;"></div>`:''}
-                    <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">圖案顏色</span>
+                    <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">顏色</span>
                         <button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'🎨 實心':'⭕ 鏤空'}</button>
                     </div>
                     <div class="row"><span class="label">大小</span><input type="range" min="10" max="400" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
@@ -113,7 +115,7 @@
     function upd(id, k, v) { const l=layers.find(x=>x.id===id); l[k]=(k==='val'?v:+v); draw(); }
 
     let curId = null;
-    function openPicker(id) { curId=id; g('picker-pop').classList.add('open'); g('hex-in').value=(id==='bg'?bgColor:layers.find(x=>x.id===id).color); }
+    function openPicker(id) { curId=id; g('picker-pop').classList.add('open'); g('hex-in').value=(id==='bg'?bgColor:layers.find(x=>x.id===curId).color); }
     function closePop() { g('picker-pop').classList.remove('open'); draw(); }
     g('hex-in').oninput = function() { setC(this.value); }
     function setC(c) { if(curId==='bg') bgColor=c; else layers.find(x=>x.id===curId).color=c; initUI(); draw(); }
@@ -124,7 +126,7 @@
         ctx.fillStyle = bgColor; ctx.fillRect(0,0,c.width,c.height);
         layers.forEach(l => {
             if(!l.on) return;
-            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = Math.max(2, l.sz*0.05);
+            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = Math.max(2, l.sz*0.06);
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
             if(l.type === 'emoji') {
@@ -135,7 +137,7 @@
                     octx.globalCompositeOperation = 'source-in';
                     octx.fillStyle = l.color; octx.fillRect(0,0,off.width,off.height);
                 } else {
-                    octx.strokeStyle = l.color; octx.lineWidth = Math.max(2, l.sz*0.05);
+                    octx.strokeStyle = l.color; octx.lineWidth = Math.max(2, l.sz*0.06);
                     octx.strokeText(l.val, off.width/2, off.height/2);
                 }
                 for(let y=0; y<c.height+l.sp; y+=l.sp) for(let x=0; x<c.width+l.sp; x+=l.sp) {
@@ -147,12 +149,13 @@
                     ctx.beginPath();
                     if(l.type==='dots') ctx.arc(x+ox,y,l.sz,0,7);
                     else if(l.type==='stars') { 
-                        for(let i=0;i<5;i++){ 
-                            ctx.lineTo(Math.cos((18+i*72)/180*Math.PI)*l.sz+(x+ox), -Math.sin((18+i*72)/180*Math.PI)*l.sz+y);
-                            ctx.lineTo(Math.cos((54+i*72)/180*Math.PI)*(l.sz*0.4)+(x+ox), -Math.sin((54+i*72)/180*Math.PI)*(l.sz*0.4)+y);
+                        let r=l.sz, ir=l.sz*0.4, rot=Math.PI/2*3;
+                        for(let i=0;i<5;i++){
+                            ctx.lineTo(x+ox+Math.cos(rot)*r, y+Math.sin(rot)*r); rot+=Math.PI/5;
+                            ctx.lineTo(x+ox+Math.cos(rot)*ir, y+Math.sin(rot)*ir); rot+=Math.PI/5;
                         } ctx.closePath();
                     } else if(l.type==='stripes') {
-                        ctx.moveTo(x+ox-l.sz, y-c.height); ctx.lineTo(x+ox+l.sz, y+c.height);
+                        ctx.moveTo(x+ox-l.sp/2, y-c.height); ctx.lineTo(x+ox+l.sp/2, y+c.height);
                     }
                     l.fill ? ctx.fill() : ctx.stroke();
                 }
@@ -160,7 +163,7 @@
         });
     }
 
-    function save() { const a=document.createElement('a'); a.download='kuu_studio.png'; a.href=c.toDataURL(); a.click(); }
+    function save() { const a=document.createElement('a'); a.download='kuu_studio_v7_4.png'; a.href=c.toDataURL(); a.click(); }
     initUI(); draw();
 </script>
 </body>
