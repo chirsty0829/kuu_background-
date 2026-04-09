@@ -3,38 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Story Background Maker</title>
+    <title>Story Maker V2 - 全符號解鎖！</title>
     <style>
-        :root {
-            --primary-pink: #ffeef2;
-            --accent-pink: #ffb7c5;
+        /* 保留你喜歡的可愛粉色介面 */
+        :root { --p: #ffeef2; --a: #ffb7c5; }
+        body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px; }
+        .ctrl { min-width: 250px; flex: 1; }
+        canvas { border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: #fff; width: 300px; max-width: 100%; border: 5px solid white; height: auto;}
+        
+        h2 { color: var(--a); font-size: 1.1rem; margin: 10px 0; border-left: 4px solid var(--a); padding-left: 10px; }
+        input[type="range"] { width: 100%; margin-bottom: 12px; cursor: pointer; height: 6px; -webkit-appearance: none; background: #eee; border-radius: 5px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--a); border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        input[type="color"] { border: none; width: 40px; height: 40px; cursor: pointer; background: none; margin-bottom: 10px; }
+        label { font-size: 0.85rem; color: #777; display: block; margin-bottom: 3px;}
+        
+        .shape-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .shape-btn { padding: 8px 15px; background: #eee; border-radius: 15px; cursor: pointer; font-size: 0.9rem; user-select: none; transition: 0.2s; border: 2px solid transparent; }
+        .shape-btn:hover { background: #e0e0e0; }
+        .shape-btn.active { background: var(--a); color: white; border-color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        
+        .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px;}
+        button.dl { background: var(--a); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 20px; font-size: 1rem; transition: 0.3s; }
+        button.dl:hover { background: #ff9aae; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <h1 style="color:var(--a); font-weight: 300; font-size: 1.5rem; margin-top: 0;">Story Canvas Studio V2</h1>
+    <div class="box">
+        <div class="ctrl">
+            <h2>🎨 顏色設定</h2>
+            <div class="row"><input type="color" id="bg" value="#ffeef2"><label>背景底色</label></div>
+            <div class="row"><input type="color" id="pc" value="#ffffff"><label>圖案顏色</label></div>
+
+            <h2>✨ 符號選擇 (可多選疊加)</h2>
+            <div class="shape-group" id="shapeSelector">
+                <div class="shape-btn" data-shape="dots">⚪ 波點</div>
+                <div class="shape-btn" data-shape="stars">⭐ 星星</div>
+                <div class="shape-btn" data-shape="hearts">💖 愛心</div>
+                <div class="shape-btn" data-shape="stripes">➖ 條紋</div>
+            </div>
+
+            <h2>🎛️ 圖案控制 (共同控制)</h2>
+            <label>圖案大小</label><input type="range" id="sz" min="2" max="60" value="15">
+            <label>密集間距</label><input type="range" id="sp" min="30" max="250" value="70">
+            
+            <button class="dl" onclick="download()">下載 PNG 背景圖</button>
+        </div>
+        <canvas id="cv" width="1080" height="1920"></canvas>
+    </div>
+    <script>
+        const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
+        
+        let activeShapes = ['dots']; // 預設開啟波點
+        
+        // --- 繪製各種符號的函數 ---
+        const drawDot = (x, y, s) => { ctx.beginPath(); ctx.arc(x, y, s, 0, 7); ctx.fill(); };
+        
+        const drawStar = (cx, cy, spikes, outerRadius, innerRadius) => {
+            let rot = Math.PI/2*3, x = cx, y = cy, step=Math.PI/spikes;
+            ctx.beginPath(); ctx.moveTo(cx, cy-outerRadius);
+            for(let i=0; i<spikes; i++){
+                x=cx+Math.cos(rot)*outerRadius; y=cy+Math.sin(rot)*outerRadius; ctx.lineTo(x,y); rot+=step;
+                x=cx+Math.cos(rot)*innerRadius; y=cy+Math.sin(rot)*innerRadius; ctx.lineTo(x,y); rot+=step;
+            }
+            ctx.lineTo(cx, cy-outerRadius); ctx.closePath(); ctx.fill();
+        };
+
+        const drawHeart = (x, y, size) => {
+            ctx.beginPath();
+            let s = size * 0.7; // 心形基礎縮放
+            ctx.moveTo(x, y + s*0.3);
+            ctx.bezierCurveTo(x, y - s*0.2, x - s/2, y - s*0.2, x - s/2, y + s*0.3);
+            ctx.bezierCurveTo(x - s/2, y + s*0.8, x, y + s*1.1, x, y + s*1.3);
+            ctx.bezierCurveTo(x, y + s*1.1, x + s/2, y + s*0.8, x + s/2, y + s*0.3);
+            ctx.bezierCurveTo(x + s/2, y - s*0.2, x, y - s*0.2, x, y + s*0.3);
+            ctx.fill();
+        };
+
+        const drawStripes = (w, h, s, sz, color) => {
+            ctx.lineWidth = sz; ctx.strokeStyle = color;
+            for(let i=0; i<w+h; i+=s) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i-h,h); ctx.stroke(); }
+        };
+
+        // --- 主繪製函數 ---
+        function draw() {
+            const w = c.width, h = c.height, sz = +g('sz').value, sp = +g('sp').value, color = g('pc').value;
+            // 1. 畫底色
+            ctx.fillStyle = g('bg').value; ctx.fillRect(0,0,w,h);
+            ctx.fillStyle = color;
+
+            // 2. 繪製條紋 (如果選中，放在最底層)
+            if (activeShapes.includes('stripes')) { drawStripes(w, h, sp, sz, color); }
+
+            // 3. 繪製平鋪圖案 (波點、星星、愛心)
+            if (activeShapes.includes('dots') || activeShapes.includes('stars') || activeShapes.includes('hearts')) {
+                ctx.fillStyle = color;
+                for(let y=0; y<h+sp; y+=sp) {
+                    for(let x=0; x<w+sp; x+=sp) {
+                        // 交錯邏輯
+                        let shift = (Math.floor(y/sp)%2==0)?0:sp/2;
+                        let curX = x + shift, curY = y;
+
+                        if (activeShapes.includes('dots')) { drawDot(curX, curY, sz); }
+                        if (activeShapes.includes('stars')) { drawStar(curX, curY, 5, sz*1.2, sz*0.5); }
+                        if (activeShapes.includes('hearts')) { drawHeart(curX, curY, sz*1.4); }
+                    }
+                }
+            }
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--primary-pink);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-            color: #555;
-        }
-        .container {
-            display: flex;
-            gap: 20px;
-            max-width: 900px;
-            width: 100%;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        /* 控制面板 */
-        .controls {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            flex: 1;
-            min-width: 300px;
+
+        // --- 互動邏輯 ---
+        // 監聽拉桿和顏色選擇
+        ['bg','pc','sz','sp'].forEach(i => g(i).oninput = draw);
+
+        // 形狀多選邏輯
+        const selector = g('shapeSelector');
+        selector.querySelectorAll('.shape-btn').forEach(btn => {
+            // 預設將 activeshapes 裡有的形狀加上 active class
+            if (activeShapes.includes(btn.dataset.shape)) btn.classList.add('active');
+
+            btn.addEventListener('click', () => {
+                const shape = btn.dataset.shape;
+                btn.classList.toggle('active'); // 切換按鈕樣式
+                
+                // 更新 activeShapes 陣列
+                if (btn.classList.contains('active')) {
+                    if (!activeShapes.includes(shape)) activeShapes.push(shape);
+                } else {
+                    activeShapes = activeShapes.filter(s => s !== shape);
+                }
+                draw(); // 重新繪製
+            });
+        });
+
+        function download() { let a = document.createElement('a'); a.download='ig-story-bg.png'; a.href=c.toDataURL(); a.click(); }
+        
+        // 初始化
+        draw();
+    </script>
+</body>
+</html>            min-width: 300px;
         }
         h2 { color: var(--accent-pink); font-size: 1.2rem; margin-top: 0; }
         .control-group { margin-bottom: 20px; }
