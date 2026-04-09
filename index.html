@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Story Background Maker</title>
+    <style>
+        :root {
+            --primary-pink: #ffeef2;
+            --accent-pink: #ffb7c5;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-pink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            color: #555;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        /* 控制面板 */
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 300px;
+        }
+        h2 { color: var(--accent-pink); font-size: 1.2rem; margin-top: 0; }
+        .control-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: bold; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        input[type="color"] { border: none; width: 40px; height: 40px; cursor: pointer; background: none; }
+        
+        /* 預覽區 */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+            border: 5px solid white;
+        }
+        .btn-download {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: var(--accent-pink);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .btn-download:hover { background-color: #ff9aae; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <h1 style="color: #ffb7c5; font-weight: 300;">Story Canvas Studio</h1>
+
+    <div class="container">
+        <div class="controls">
+            <h2>🎨 顏色設定</h2>
+            <div class="control-group">
+                <label>背景底色</label>
+                <input type="color" id="bgColor" value="#ffeef2">
+            </div>
+            <div class="control-group">
+                <label>圖案顏色</label>
+                <input type="color" id="patternColor" value="#ffffff">
+            </div>
+
+            <hr style="border: 0.5px solid #eee; margin: 25px 0;">
+
+            <h2>⚪ 波點設定 (Dots)</h2>
+            <div class="control-group">
+                <label>波點大小</label>
+                <input type="range" id="dotSize" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <label>密集間距</label>
+                <input type="range" id="dotSpacing" min="20" max="200" value="60">
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <canvas id="canvas" width="1080" height="1920" style="width: 300px;"></canvas>
+            <button class="btn-download" id="downloadBtn">下載背景圖 (.png)</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 取得所有控制項
+        const bgColorInput = document.getElementById('bgColor');
+        const patternColorInput = document.getElementById('patternColor');
+        const dotSizeInput = document.getElementById('dotSize');
+        const dotSpacingInput = document.getElementById('dotSpacing');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        function draw() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const bgColor = bgColorInput.value;
+            const patternColor = patternColorInput.value;
+            const dotSize = parseInt(dotSizeInput.value);
+            const spacing = parseInt(dotSpacingInput.value);
+
+            // 1. 畫背景
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, width, height);
+
+            // 2. 畫波點 (交錯排列增加美感)
+            ctx.fillStyle = patternColor;
+            for (let y = 0; y < height + spacing; y += spacing) {
+                for (let x = 0; x < width + spacing; x += spacing) {
+                    // 每隔一行平移一半距離，做出交叉排版的視覺感
+                    let shift = (Math.floor(y / spacing) % 2 === 0) ? 0 : spacing / 2;
+                    ctx.beginPath();
+                    ctx.arc(x + shift, y, dotSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // 監聽輸入事件，實時更新畫布
+        [bgColorInput, patternColorInput, dotSizeInput, dotSpacingInput].forEach(input => {
+            input.addEventListener('input', draw);
+        });
+
+        // 下載功能
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'my-ig-background.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        // 初始化繪製
+        draw();
+    </script>
+</body>
+</html>
