@@ -3,198 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V7.1</title>
+    <title>뀨 kuu 🎀 Studio V7.2</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
-        body { background-color: var(--p); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; height: 100vh; overflow: hidden; color: var(--txt); }
+        body { background-color: var(--p); display: flex; flex-direction: column; height: 100vh; margin: 0; padding: 0; overflow: hidden; color: var(--txt); }
 
-        /* 縮小預覽區，騰出操作空間 */
-        .preview-area { flex: 0 0 48vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; width: 100%; position: relative; z-index: 10; }
-        .brand { font-size: 1.1rem; font-weight: bold; color: var(--a); margin-bottom: 5px; }
-        canvas { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(255,183,197,0.3); max-height: 40vh; max-width: 85%; border: 4px solid white; height: auto; }
+        /* V7.2 經典回歸：控制面板置頂 */
+        .header-brand { padding: 10px; text-align: center; font-weight: bold; color: var(--a); font-size: 1.1rem; flex: 0 0 auto; }
+        
+        .controls-top { flex: 1; overflow-y: auto; padding: 10px 20px 20px; display: flex; flex-direction: column; gap: 10px; z-index: 50; }
+        
+        /* 成果區域居中下 */
+        .preview-mid { flex: 0 0 45vh; display: flex; align-items: center; justify-content: center; padding: 15px; background: rgba(255,255,255,0.3); border-radius: var(--radius) var(--radius) 0 0; position: relative; }
+        canvas { background: #fff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); max-height: 100%; max-width: 90%; border: 3px solid white; height: auto; }
 
-        /* 控制抽屜 */
-        .controls-drawer { flex: 1; width: 100%; max-width: 450px; background: white; border-radius: var(--radius) var(--radius) 0 0; display: flex; flex-direction: column; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); position: relative; z-index: 20; overflow: hidden;}
-        .drawer-h { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fff5f7; }
-        .drawer-b { flex: 1; overflow-y: auto; padding: 15px 20px 100px; display: flex; flex-direction: column; gap: 12px; }
-
-        /* 面板與 UI */
-        .panel { background: #fef8f9; border-radius: var(--radius); overflow: hidden; border: 1px solid #fff0f3; margin-bottom: 5px; }
+        /* UI 元件 */
+        .panel { background: white; border-radius: var(--radius); border: 1px solid #fff0f3; margin-bottom: 8px; box-shadow: 0 2px 10px rgba(255,183,197,0.1); }
         .p-h { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .p-h h3 { font-size: 0.85rem; margin: 0; display: flex; align-items: center; gap: 8px; }
-        .p-b { padding: 0 15px 15px; display: none; border-top: 1px solid #fff5f7; }
-        .panel.open .p-b { display: block; }
-
+        .p-b { padding: 0 15px 15px; border-top: 1px solid #fff5f7; }
+        
         .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-        .label { font-size: 0.75rem; color: #a18d90; width: 70px; }
-        input[type="range"] { flex: 1; height: 5px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--a); border-radius: 50%; border: 3px solid white; }
-        input[type="text"], .select-input { flex: 1; padding: 8px 12px; border: 1px solid #fce4e8; border-radius: 12px; font-size: 0.85rem; outline: none; background: white; }
-
-        .kuu-color-btn { width: 32px; height: 32px; border-radius: 10px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        .btn-kuu { background: var(--p); color: var(--a); border: 2px solid var(--a); padding: 8px 15px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
-        .toggle-btn { padding: 4px 10px; border-radius: 10px; border: 1px solid var(--a); font-size: 0.7rem; cursor: pointer; background: white; color: var(--a); }
+        .label { font-size: 0.75rem; color: #a18d90; width: 65px; }
+        input[type="range"] { flex: 1; height: 4px; -webkit-appearance: none; background: #fce4e8; border-radius: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--a); border-radius: 50%; border: 2px solid white; }
+        
+        .kuu-color-btn { width: 30px; height: 30px; border-radius: 8px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+        .btn-kuu { background: var(--p); color: var(--a); border: 2px solid var(--a); padding: 8px 15px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+        .toggle-btn { padding: 5px 12px; border-radius: 10px; border: 1px solid var(--a); font-size: 0.75rem; cursor: pointer; background: white; color: var(--a); }
         .toggle-btn.active { background: var(--a); color: white; }
 
-        /* 下載按鈕 */
-        .dl-bar { position: fixed; bottom: 15px; width: 100%; max-width: 420px; padding: 0 20px; z-index: 100; pointer-events: none; }
-        .dl-btn { pointer-events: auto; background: var(--a); color: white; border: none; padding: 14px; border-radius: 30px; width: 100%; font-size: 1rem; font-weight: bold; box-shadow: 0 5px 15px rgba(255,183,197,0.4); }
+        /* 儲存按鈕墊底 */
+        .footer-save { flex: 0 0 auto; padding: 15px 20px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .dl-btn { background: var(--a); color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; font-size: 1rem; font-weight: bold; cursor: pointer; }
 
-        /* 選色器彈窗 - 修復 pointer-events */
-        .kuu-pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        /* 選色器彈窗 */
+        .kuu-pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .kuu-pop.open { display: flex; }
-        .kuu-pop-content { background: white; width: 85%; max-width: 300px; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; }
-        .presets-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 5px 0; }
+        .kuu-pop-content { background: white; width: 85%; max-width: 300px; border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .presets-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
     </style>
 </head>
 <body>
 
-    <div class="preview-area">
-        <div class="brand">뀨 kuu Studio V7.1 🎀</div>
+    <div class="header-brand">뀨 kuu Studio V7.2 🎀</div>
+
+    <div class="controls-top">
+        <div class="panel">
+            <div class="p-h"><h3>🎨 核心色彩控制</h3> <button class="toggle-btn" onclick="invertAll()">一鍵反轉</button></div>
+            <div class="p-b">
+                <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景底色</span></div>
+            </div>
+        </div>
+        
+        <button class="btn-kuu" onclick="addLayer()">➕ 新增圖層層疊</button>
+        <div id="layers-list"></div>
+    </div>
+
+    <div class="preview-mid">
         <canvas id="cv" width="1080" height="1920"></canvas>
     </div>
 
-    <div class="controls-drawer">
-        <div class="drawer-h"><h3>🛠️ 圖層管理 Layer Studio</h3></div>
-        <div class="drawer-b">
-            <div class="panel open">
-                <div class="p-h"><h3>🎨 畫布底色</h3></div>
-                <div class="p-b">
-                    <div class="row"><div class="kuu-color-btn" id="bg_cb" onclick="openPicker('bg')"></div><span class="label">背景底色</span> <button class="toggle-btn" onclick="invertColors()">🔄 反轉</button></div>
-                </div>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-bottom:5px;">
-                <button class="btn-kuu" style="flex:1" onclick="addLayer()">➕ 新增圖層</button>
-            </div>
-            
-            <div id="layers-container"></div>
-        </div>
+    <div class="footer-save">
+        <button class="dl-btn" onclick="save()">儲存背景圖 (.png)</button>
     </div>
-
-    <div class="dl-bar"><button class="dl-btn" onclick="save()">儲存背景圖 (.png)</button></div>
 
     <div class="kuu-pop" id="pop-picker">
         <div class="kuu-pop-content">
-            <h3 style="text-align: center; font-size:1rem;">Kuu 自定義選色</h3>
-            <input type="text" id="color-hex" value="#ffeef2">
+            <h3 style="text-align: center; font-size:1rem; margin:0;">自定義選色</h3>
             <div class="presets-grid" id="pop-presets"></div>
-            <button class="btn-kuu" onclick="closePop('pop-picker')">完成</button>
-        </div>
-    </div>
-
-    <div class="kuu-pop" id="pop-type">
-        <div class="kuu-pop-content">
-            <h3 style="text-align: center; font-size:1rem;">選擇圖案</h3>
-            <button class="btn-kuu" onclick="selectType('emoji')">✨ Emoji</button>
-            <button class="btn-kuu" onclick="selectType('dots')">⚪ 波點</button>
-            <button class="btn-kuu" onclick="selectType('stars')">⭐ 星星</button>
-            <button class="btn-kuu" onclick="selectType('stripes')">➖ 條紋</button>
+            <button class="btn-kuu" onclick="closePop()">完成設定</button>
         </div>
     </div>
 
 <script>
     const c = document.getElementById('cv'), ctx = c.getContext('2d'), g = id => document.getElementById(id);
-    const discussionColors = ['#E2E9EE', '#FFEEF2', '#D6D6D6', '#E8F6F8', '#8E9DA8', '#FCE4E8', '#EBDDE2', '#F9D5E5', '#F0F0F0', '#F5EBE0', '#D5BDAF', '#FFFFFF', '#B1C1CC', '#FFB7C5', '#D3D3D3'];
+    const colors = ['#FFEEF2', '#E2E9EE', '#D6D6D6', '#E8F6F8', '#8E9DA8', '#FCE4E8', '#F9D5E5', '#FFFFFF', '#B1C1CC', '#FFB7C5'];
 
     let bgColor = '#ffeef2';
-    let layers = [
-        { id: Date.now(), type: 'emoji', on: true, color: '#ffffff', val: '🎀', sz: 75, sp: 180, fill: true }
-    ];
+    let layers = [{ id: Date.now(), type: 'emoji', on: true, color: '#ffffff', val: '🍀', sz: 80, sp: 160, fill: false }];
 
     function initUI() {
-        const container = g('layers-container');
-        container.innerHTML = '';
+        const list = g('layers-list');
+        list.innerHTML = '';
         layers.forEach(l => {
-            const html = `
-            <div class="panel" id="panel-${l.id}">
-                <div class="p-h" onclick="toggleP(${l.id})">
-                    <h3><input type="checkbox" ${l.on?'checked':''} onclick="event.stopPropagation(); toggleLayer(${l.id})"> ${l.type.toUpperCase()}</h3>
-                    <div style="display:flex; gap:8px;">
-                        <button class="toggle-btn" onclick="event.stopPropagation(); deleteLayer(${l.id})">🗑️</button>
-                        <span>▼</span>
-                    </div>
+            list.insertAdjacentHTML('beforeend', `
+            <div class="panel">
+                <div class="p-h" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='none'?'block':'none'">
+                    <h3><input type="checkbox" ${l.on?'checked':''} onclick="event.stopPropagation(); toggleL(${l.id})"> ${l.type.toUpperCase()}</h3>
+                    <button class="toggle-btn" onclick="event.stopPropagation(); delL(${l.id})">🗑️</button>
                 </div>
                 <div class="p-b">
-                    <div class="row"><span class="label">圖案種類</span><button class="select-input" onclick="openTypePop(${l.id})">${l.type}</button></div>
-                    <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">專屬顏色</span></div>
-                    ${l.type==='emoji'?`<div class="row"><span class="label">Emoji</span><input type="text" value="${l.val}" oninput="updateVal(${l.id}, this.value)"></div>
-                    <div class="row"><span class="label">模式</span><button class="toggle-btn ${l.fill?'active':''}" onclick="toggleFill(${l.id})">${l.fill?'填充':'鏤空'}</button></div>`:''}
-                    <div class="row"><span class="label">大小</span><input type="range" min="5" max="200" value="${l.sz}" oninput="updateParam(${l.id}, 'sz', this.value)"></div>
-                    <div class="row"><span class="label">間距</span><input type="range" min="30" max="500" value="${l.sp}" oninput="updateParam(${l.id}, 'sp', this.value)"></div>
+                    <div class="row"><span class="label">圖案內容</span><input type="text" value="${l.val}" oninput="upd(${l.id}, 'val', this.value)" style="flex:1; padding:5px; border:1px solid #eee; border-radius:8px;"></div>
+                    <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">線條顏色</span>
+                        <button class="toggle-btn ${!l.fill?'active':''}" onclick="lfill(${l.id})">${l.fill?'🎨 實心':'⭕ 鏤空邊框'}</button>
+                    </div>
+                    <div class="row"><span class="label">大小</span><input type="range" min="10" max="300" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
+                    <div class="row"><span class="label">間距</span><input type="range" min="40" max="600" value="${l.sp}" oninput="upd(${l.id}, 'sp', this.value)"></div>
                 </div>
-            </div>`;
-            container.insertAdjacentHTML('beforeend', html);
+            </div>`);
         });
         g('bg_cb').style.background = bgColor;
     }
 
-    // 邏輯修復
-    function toggleP(id) { g('panel-'+id).classList.toggle('open'); }
-    function addLayer() { layers.push({ id: Date.now(), type: 'dots', on: true, color: '#ffffff', val: '🍀', sz: 15, sp: 80, fill: true }); initUI(); draw(); }
-    function deleteLayer(id) { layers = layers.filter(l => l.id !== id); initUI(); draw(); }
-    function toggleLayer(id) { const l = layers.find(x => x.id === id); l.on = !l.on; draw(); }
-    function toggleFill(id) { const l = layers.find(x => x.id === id); l.fill = !l.fill; initUI(); draw(); }
-    function updateVal(id, v) { layers.find(x => x.id === id).val = v; draw(); }
-    function updateParam(id, key, v) { layers.find(x => x.id === id)[key] = +v; draw(); }
+    // 邏輯
+    function toggleL(id) { const l=layers.find(x=>x.id===id); l.on=!l.on; draw(); }
+    function delL(id) { layers=layers.filter(x=>x.id!==id); initUI(); draw(); }
+    function lfill(id) { const l=layers.find(x=>x.id===id); l.fill=!l.fill; initUI(); draw(); }
+    function upd(id, k, v) { const l=layers.find(x=>x.id===id); l[k]=(k==='val'?v:+v); draw(); }
+    function addLayer() { layers.push({ id: Date.now(), type: 'emoji', on: true, color: '#ffffff', val: '✨', sz: 50, sp: 120, fill: true }); initUI(); draw(); }
 
-    // 色盤修復
-    let activeId = null;
-    function openPicker(id) { activeId = id; g('color-hex').value = (id==='bg'?bgColor:layers.find(x=>x.id===id).color); g('pop-picker').classList.add('open'); }
-    function closePop(id) { g(id).classList.remove('open'); draw(); }
-    function setPickerColor(c) { 
-        if(activeId === 'bg') bgColor = c; 
-        else layers.find(x => x.id === activeId).color = c;
-        g('color-hex').value = c; initUI(); draw(); 
-    }
-
-    const presets = g('pop-presets');
-    discussionColors.forEach(c => presets.insertAdjacentHTML('beforeend', `<div class="kuu-color-btn" style="background:${c}" onclick="setPickerColor('${c}')"></div>`));
-
-    // 圖案切換修復
-    let typeTargetId = null;
-    function openTypePop(id) { typeTargetId = id; g('pop-type').classList.add('open'); }
-    function selectType(t) { layers.find(x => x.id === typeTargetId).type = t; closePop('pop-type'); initUI(); draw(); }
+    // 色盤
+    let curId = null;
+    function openPicker(id) { curId = id; g('pop-picker').classList.add('open'); }
+    function closePop() { g('pop-picker').classList.remove('open'); }
+    function setCol(clr) { if(curId==='bg') bgColor=clr; else layers.find(x=>x.id===curId).color=clr; initUI(); draw(); }
+    
+    colors.forEach(clr => g('pop-presets').insertAdjacentHTML('beforeend', `<div class="kuu-color-btn" style="background:${clr}" onclick="setCol('${clr}')"></div>`));
 
     function draw() {
         ctx.fillStyle = bgColor; ctx.fillRect(0,0,c.width,c.height);
         layers.forEach(l => {
             if(!l.on) return;
-            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = l.sz * 0.1;
-            const sp = l.sp, sz = l.sz;
-            if(l.type === 'dots') {
-                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
-                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2; ctx.beginPath(); ctx.arc(x+sh,y,sz,0,7); ctx.fill();
-                }
-            } else if(l.type === 'stars') {
-                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
-                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2; drawStar(x+sh,y,sz);
-                }
-            } else if(l.type === 'emoji') {
-                ctx.font = `${sz}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                for(let y=0; y<c.height+sp; y+=sp) for(let x=0; x<c.width+sp; x+=sp) {
-                    let sh=(Math.floor(y/sp)%2==0)?0:sp/2;
-                    if(l.fill) ctx.fillText(l.val, x+sh, y); else ctx.strokeText(l.val, x+sh, y);
-                }
-            } else if(l.type === 'stripes') {
-                ctx.lineWidth = sz;
-                for(let i=-2000; i<3000; i+=sp) {
-                    ctx.beginPath(); ctx.moveTo(i, -100); ctx.lineTo(i-500, c.height+100); ctx.stroke();
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `${l.sz}px serif`;
+            ctx.fillStyle = l.color; ctx.strokeStyle = l.color; ctx.lineWidth = Math.max(1, l.sz * 0.05);
+
+            for(let y=0; y<c.height+l.sp; y+=l.sp) {
+                for(let x=0; x<c.width+l.sp; x+=l.sp) {
+                    let ox = (Math.floor(y/l.sp)%2==0) ? 0 : l.sp/2;
+                    if(l.fill) {
+                        ctx.fillText(l.val, x+ox, y);
+                    } else {
+                        // V7.2 核心修復：真正的鏤空邊框
+                        ctx.save();
+                        // 這裡使用 strokeText 實現邊框，不填充顏色
+                        ctx.strokeText(l.val, x+ox, y);
+                        ctx.restore();
+                    }
                 }
             }
         });
     }
 
-    function drawStar(x,y,r){
-        ctx.beginPath(); for(let i=0;i<5;i++){
-            ctx.lineTo(Math.cos((18+i*72)/180*Math.PI)*r+x, -Math.sin((18+i*72)/180*Math.PI)*r+y);
-            ctx.lineTo(Math.cos((54+i*72)/180*Math.PI)*(r*0.4)+x, -Math.sin((54+i*72)/180*Math.PI)*(r*0.4)+y);
-        } ctx.closePath(); ctx.fill();
-    }
-    
-    function invertColors(){ const oldBg = bgColor; bgColor = layers[0].color; layers.forEach(l=>l.color=oldBg); initUI(); draw(); }
-    function save(){ const link = document.createElement('a'); link.download = 'kuu_v7_1.png'; link.href = c.toDataURL(); link.click(); }
+    function invertAll() { const tmp=bgColor; bgColor=layers[0].color; layers[0].color=tmp; initUI(); draw(); }
+    function save() { const a=document.createElement('a'); a.download='kuu_v7_2.png'; a.href=c.toDataURL(); a.click(); }
 
     initUI(); draw();
 </script>
