@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V8.5.4 Fine-tuned</title>
+    <title>뀨 kuu 🎀 Studio V8.5.5 Welcoming</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
@@ -35,13 +35,26 @@
         .order-btn { background: #fff; border: 1px solid #eee; border-radius: 5px; width: 22px; height: 22px; font-size: 0.6rem; color: var(--a); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .pop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .pop.open { display: flex; }
-        .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; }
+        .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; }
+        
+        /* 歡迎彈窗專用樣式 */
+        #welcome-pop .pop-c { text-align: center; padding: 30px 20px; border-radius: 30px; border: 4px solid var(--p); }
+        #welcome-pop h2 { color: var(--a); font-size: 1.2rem; margin-top: 0; }
+        #welcome-pop p { font-size: 0.8rem; color: #a18d90; line-height: 1.6; margin: 15px 0 25px; }
     </style>
 </head>
 <body>
+    <div class="pop open" id="welcome-pop">
+        <div class="pop-c">
+            <h2>뀨 kuu Studio 歡迎你! 🎀</h2>
+            <p>這是一個專為韓系清新風打造的畫布工具。<br>你可以自由搭配漸變底色、格紋，<br>還有能隨機散布、大小不一的可愛圖案。<br>快來挑戰成為氛圍感大師吧！✨</p>
+            <button class="btn-kuu" style="width:80%; margin:0 auto; display:block;" onclick="closeWelcome()">開始創作 🎨</button>
+        </div>
+    </div>
+
     <div class="top-bar">
-        <div class="top-left"><div class="brand">뀨 kuu Studio V8.5.4</div>
+        <div class="top-left"><div class="brand">뀨 kuu Studio V8.5.5</div>
             <div class="ratio-btns">
                 <button class="ratio-btn active" onclick="setRatio(9/16, this)">9:16</button>
                 <button class="ratio-btn" onclick="setRatio(1/1, this)">1:1</button>
@@ -76,12 +89,11 @@
     const presets = ['#FFEEF2','#FCEBEF','#FFD1DC','#FFB7C5','#FFF9E5','#FFF3B0','#E0F2F1','#B2DFDB','#C2E2E8','#E2E9EE','#FFFFFF','#D6D6D6','#BDBDBD','#A18D90','#F5EBE0','#D5BDAF'];
     let bgColor = '#ffeef2', grad = { on: false, c1: '#ffeef2', c2: '#ffffff', blur: 80, dir: 'h' }, layers = [], openId = 'bg';
 
+    function closeWelcome() { g('welcome-pop').classList.remove('open'); } // 關閉歡迎彈窗
+
     function setRatio(ratio, el) {
-        document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        if (ratio === 1/1) { c.width = 1080; c.height = 1080; }
-        else if (ratio === 16/9) { c.width = 1920; c.height = 1080; }
-        else { c.width = 1080; c.height = 1920; }
+        document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
+        if (ratio === 1/1) { c.width = 1080; c.height = 1080; } else if (ratio === 16/9) { c.width = 1920; c.height = 1080; } else { c.width = 1080; c.height = 1920; }
         draw();
     }
     function tglPanel(el) { const p = el.closest('.panel'); const id = p.id === 'p-bg' ? 'bg' : p.id.split('-')[1]; openId = (openId == id) ? null : id; initUI(); }
@@ -103,17 +115,18 @@
             list.insertAdjacentHTML('beforeend', `<div class="panel ${isOpen?'open':''}" id="p-${l.id}">
                 <div class="p-h" onclick="tglPanel(this)"><div style="display:flex; align-items:center;"><div style="display:flex; gap:3px; margin-right:8px;"><button class="order-btn" onclick="event.stopPropagation(); moveL(${idx}, -1)">▲</button><button class="order-btn" onclick="event.stopPropagation(); moveL(${idx}, 1)">▼</button></div><h3>${isOpen?'▼':'▶'} ${l.type.toUpperCase()}</h3></div><button class="del-btn" onclick="event.stopPropagation(); delL(${l.id})">×</button></div>
                 <div class="p-b">${l.type==='emoji'?`<div class="row"><span class="label">符號</span><input type="text" value="${l.val}" oninput="upd(${l.id}, 'val', this.value)" style="flex:1; border:1px solid #eee; padding:3px;"></div>`:''}
-                <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">顏色</span>${l.type!=='gingham'?`<button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'實心':'原樣'}</button>`:''}</div>
-                <div class="row"><span class="label">大小/粗細</span><input type="range" min="2" max="500" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
+                <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">顏色</span>${l.type!=='gingham'?`<button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'實心染':'原樣'}</button>`:''}</div>
+                <div class="row"><span class="label">${l.type==='stripes'?'粗細':'大小'}</span><input type="range" min="2" max="500" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
                 ${l.type!=='gingham'?`<div class="row"><span class="label">間距</span><input type="range" min="20" max="600" value="${l.sp}" oninput="upd(${l.id}, 'sp', this.value)"></div>`:''}
-                <div class="row"><span class="label">模糊/透明</span><input type="range" min="0" max="100" value="${l.op*100}" oninput="upd(${l.id}, 'op', this.value/100)"></div>
-                <div class="row"><span class="label">隨機🎲</span><input type="range" min="0" max="300" value="${l.scatter}" oninput="upd(${l.id}, 'scatter', this.value)"></div>
+                <div class="row"><span class="label">不透明度</span><input type="range" min="0" max="100" value="${l.op*100}" oninput="upd(${l.id}, 'op', this.value/100)"></div>
+                <div class="row"><span class="label">隨機散布🎲</span><input type="range" min="0" max="300" value="${l.scatter}" oninput="upd(${l.id}, 'scatter', this.value)"></div>
+                <div class="row"><span class="label">隨機大小🎲</span><input type="range" min="0" max="100" value="${l.sizeVar||0}" oninput="upd(${l.id}, 'sizeVar', this.value)"></div>
                 </div></div>`);
         });
         g('p-bg').className = 'panel' + (openId === 'bg' ? ' open' : '');
     }
 
-    function addL(type) { const id = Date.now(); layers.unshift({id, type, color:'#ffffff', val:type==='emoji'?'✨':'', sz: type==='stripes'?50:100, sp:200, fill:true, op:1, scatter:0}); openId = id; initUI(); draw(); }
+    function addL(type) { const id = Date.now(); layers.unshift({id, type, color:'#ffffff', val:type==='emoji'?'✨':'', sz: type==='stripes'?50:100, sp:200, fill:true, op:1, scatter:0, sizeVar:0}); openId = id; initUI(); draw(); }
     function delL(id) { layers=layers.filter(x=>x.id!==id); initUI(); draw(); }
     function tglF(id) { const l=layers.find(x=>x.id===id); l.fill=!l.fill; draw(); }
     function upd(id, k, v) { const l=layers.find(x=>x.id===id); l[k]=(k==='val'?v:+v); draw(); }
@@ -143,22 +156,24 @@
                 for(let y=-l.sp; y<c.height+l.sp; y+=l.sp) for(let x=-l.sp; x<c.width+l.sp; x+=l.sp) {
                     let rx = x + (Math.floor(y/l.sp)%2==0?0:l.sp/2) + (Math.random()-0.5)*l.scatter;
                     let ry = y + (Math.random()-0.5)*l.scatter;
-                    let baseSz = l.sz * 0.3; // ✨ 全局精細化係數：將基礎大小縮小 70%
+                    // ✨ 隨機大小應用：應用 baseSz * (1 + (Math.random()-0.5) * l.sizeVar/50)
+                    let baseSz = l.sz * 0.3; 
+                    let finalSz = Math.max(1, baseSz * (1 + (Math.random()-0.5)*(l.sizeVar||0)/50));
                     
                     if(l.type==='emoji') {
-                        const eC = document.createElement('canvas'); eC.width = baseSz * 3; eC.height = baseSz * 3;
-                        const eX = eC.getContext('2d'); eX.font = `${baseSz * 2}px serif`; eX.textAlign='center'; eX.textBaseline='middle';
+                        const eC = document.createElement('canvas'); eC.width = finalSz * 3; eC.height = finalSz * 3;
+                        const eX = eC.getContext('2d'); eX.font = `${finalSz * 2}px serif`; eX.textAlign='center'; eX.textBaseline='middle';
                         eX.fillText(l.val, eC.width/2, eC.height/2);
                         if(l.fill) { eX.globalCompositeOperation = 'source-in'; eX.fillStyle = l.color; eX.fillRect(0,0,eC.width,eC.height); }
                         ctx.drawImage(eC, rx - eC.width/2, ry - eC.height/2);
                     } else if(l.type==='stripes') {
-                        ctx.beginPath(); ctx.lineWidth = baseSz * 0.5; // ✨ 條紋大幅精細化
+                        ctx.beginPath(); ctx.lineWidth = finalSz * 0.5; // Stripes 也支持隨機粗細
                         ctx.moveTo(rx - 1500, ry - 1500); ctx.lineTo(rx + 1500, ry + 1500); ctx.stroke();
                     } else {
                         ctx.beginPath();
-                        if(l.type==='dots') ctx.arc(rx,ry,baseSz/2,0,7);
+                        if(l.type==='dots') ctx.arc(rx,ry,finalSz/2,0,7);
                         else if(l.type==='stars') {
-                            let r=baseSz/2, ir=r*0.4, rot=Math.PI/2*3;
+                            let r=finalSz/2, ir=r*0.4, rot=Math.PI/2*3;
                             for(let i=0;i<5;i++){ ctx.lineTo(rx+Math.cos(rot)*r, ry+Math.sin(rot)*r); rot+=Math.PI/5; ctx.lineTo(rx+Math.cos(rot)*ir, ry+Math.sin(rot)*ir); rot+=Math.PI/5; }
                         }
                         ctx.closePath(); l.fill ? ctx.fill() : ctx.stroke();
