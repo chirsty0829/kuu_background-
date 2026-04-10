@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V8.5.5 Welcoming</title>
+    <title>뀨 kuu 🎀 Studio V8.5.6 Angle Pro</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
@@ -38,7 +38,6 @@
         .pop-c { background: white; width: 85%; max-width: 320px; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; }
         
-        /* 歡迎彈窗專用樣式 */
         #welcome-pop .pop-c { text-align: center; padding: 30px 20px; border-radius: 30px; border: 4px solid var(--p); }
         #welcome-pop h2 { color: var(--a); font-size: 1.2rem; margin-top: 0; }
         #welcome-pop p { font-size: 0.8rem; color: #a18d90; line-height: 1.6; margin: 15px 0 25px; }
@@ -47,14 +46,14 @@
 <body>
     <div class="pop open" id="welcome-pop">
         <div class="pop-c">
-            <h2>뀨 kuu Studio 歡迎你! 🎀</h2>
-            <p>這是一個專為韓系清新風打造的畫布工具。<br>你可以自由搭配漸變底色、格紋，<br>還有能隨機散布、大小不一的可愛圖案。<br>快來挑戰成為氛圍感大師吧！✨</p>
+            <h2>뀨 kuu Studio V8.5.6 🎀</h2>
+            <p>角度大師升級！現在所有圖層都能調整角度了。<br>條紋和格紋現在更加整齊俐落。<br>來製造屬於自己的背景圖吧！</p>
             <button class="btn-kuu" style="width:80%; margin:0 auto; display:block;" onclick="closeWelcome()">開始創作 🎨</button>
         </div>
     </div>
 
     <div class="top-bar">
-        <div class="top-left"><div class="brand">뀨 kuu Studio V8.5.5</div>
+        <div class="top-left"><div class="brand">뀨 kuu Studio</div>
             <div class="ratio-btns">
                 <button class="ratio-btn active" onclick="setRatio(9/16, this)">9:16</button>
                 <button class="ratio-btn" onclick="setRatio(1/1, this)">1:1</button>
@@ -70,7 +69,7 @@
             <div class="p-b" id="bg-panel-body"></div>
         </div>
         <div style="display:flex; gap:8px;">
-            <button class="btn-kuu" onclick="addL('emoji')">✨ Emoji</button>
+            <button class="btn-kuu" onclick="addL('emoji')">🎀 Emoji</button>
             <button class="btn-kuu" onclick="addL('dots')">⚪ 波點</button>
             <button class="btn-kuu" onclick="addL('stars')">⭐ 星星</button>
             <button class="btn-kuu" onclick="addL('stripes')">➖ 條紋</button>
@@ -79,8 +78,6 @@
         <div id="layer-list"></div>
     </div>
     <div class="pop" id="picker-pop"><div class="pop-c">
-        <h3 style="text-align:center; font-size:1rem; margin-top:0;">韓系配色</h3>
-        <div class="row"><span class="label">自訂碼</span><input type="text" id="hex-in" placeholder="#FFFFFF" style="flex:1; padding:6px; border:1px solid #eee; border-radius:8px;"></div>
         <div class="grid" id="preset-grid"></div>
         <button class="btn-kuu" style="width:100%" onclick="closePop()">完成</button>
     </div></div>
@@ -89,8 +86,7 @@
     const presets = ['#FFEEF2','#FCEBEF','#FFD1DC','#FFB7C5','#FFF9E5','#FFF3B0','#E0F2F1','#B2DFDB','#C2E2E8','#E2E9EE','#FFFFFF','#D6D6D6','#BDBDBD','#A18D90','#F5EBE0','#D5BDAF'];
     let bgColor = '#ffeef2', grad = { on: false, c1: '#ffeef2', c2: '#ffffff', blur: 80, dir: 'h' }, layers = [], openId = 'bg';
 
-    function closeWelcome() { g('welcome-pop').classList.remove('open'); } // 關閉歡迎彈窗
-
+    function closeWelcome() { g('welcome-pop').classList.remove('open'); }
     function setRatio(ratio, el) {
         document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
         if (ratio === 1/1) { c.width = 1080; c.height = 1080; } else if (ratio === 16/9) { c.width = 1920; c.height = 1080; } else { c.width = 1080; c.height = 1920; }
@@ -112,21 +108,23 @@
         const list = g('layer-list'); list.innerHTML = '';
         layers.forEach((l, idx) => {
             const isOpen = openId == l.id;
+            const isPattern = l.type==='stripes' || l.type==='gingham';
             list.insertAdjacentHTML('beforeend', `<div class="panel ${isOpen?'open':''}" id="p-${l.id}">
                 <div class="p-h" onclick="tglPanel(this)"><div style="display:flex; align-items:center;"><div style="display:flex; gap:3px; margin-right:8px;"><button class="order-btn" onclick="event.stopPropagation(); moveL(${idx}, -1)">▲</button><button class="order-btn" onclick="event.stopPropagation(); moveL(${idx}, 1)">▼</button></div><h3>${isOpen?'▼':'▶'} ${l.type.toUpperCase()}</h3></div><button class="del-btn" onclick="event.stopPropagation(); delL(${l.id})">×</button></div>
                 <div class="p-b">${l.type==='emoji'?`<div class="row"><span class="label">符號</span><input type="text" value="${l.val}" oninput="upd(${l.id}, 'val', this.value)" style="flex:1; border:1px solid #eee; padding:3px;"></div>`:''}
                 <div class="row"><div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div><span class="label">顏色</span>${l.type!=='gingham'?`<button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'實心染':'原樣'}</button>`:''}</div>
                 <div class="row"><span class="label">${l.type==='stripes'?'粗細':'大小'}</span><input type="range" min="2" max="500" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
                 ${l.type!=='gingham'?`<div class="row"><span class="label">間距</span><input type="range" min="20" max="600" value="${l.sp}" oninput="upd(${l.id}, 'sp', this.value)"></div>`:''}
+                <div class="row"><span class="label">旋轉角度</span><input type="range" min="0" max="360" value="${l.ang||0}" oninput="upd(${l.id}, 'ang', this.value)"></div>
                 <div class="row"><span class="label">不透明度</span><input type="range" min="0" max="100" value="${l.op*100}" oninput="upd(${l.id}, 'op', this.value/100)"></div>
-                <div class="row"><span class="label">隨機散布🎲</span><input type="range" min="0" max="300" value="${l.scatter}" oninput="upd(${l.id}, 'scatter', this.value)"></div>
-                <div class="row"><span class="label">隨機大小🎲</span><input type="range" min="0" max="100" value="${l.sizeVar||0}" oninput="upd(${l.id}, 'sizeVar', this.value)"></div>
+                ${!isPattern ? `<div class="row"><span class="label">隨機散布🎲</span><input type="range" min="0" max="300" value="${l.scatter}" oninput="upd(${l.id}, 'scatter', this.value)"></div>
+                <div class="row"><span class="label">隨機大小🎲</span><input type="range" min="0" max="100" value="${l.sizeVar||0}" oninput="upd(${l.id}, 'sizeVar', this.value)"></div>` : ''}
                 </div></div>`);
         });
         g('p-bg').className = 'panel' + (openId === 'bg' ? ' open' : '');
     }
 
-    function addL(type) { const id = Date.now(); layers.unshift({id, type, color:'#ffffff', val:type==='emoji'?'✨':'', sz: type==='stripes'?50:100, sp:200, fill:true, op:1, scatter:0, sizeVar:0}); openId = id; initUI(); draw(); }
+    function addL(type) { const id = Date.now(); layers.unshift({id, type, color:'#ffffff', val:type==='emoji'?'✨':'', sz: type==='stripes'?50:100, sp:200, fill:true, op:1, scatter:0, sizeVar:0, ang:type==='stripes'?45:0}); openId = id; initUI(); draw(); }
     function delL(id) { layers=layers.filter(x=>x.id!==id); initUI(); draw(); }
     function tglF(id) { const l=layers.find(x=>x.id===id); l.fill=!l.fill; draw(); }
     function upd(id, k, v) { const l=layers.find(x=>x.id===id); l[k]=(k==='val'?v:+v); draw(); }
@@ -135,7 +133,6 @@
     function openPicker(id) { curId=id; g('picker-pop').classList.add('open'); }
     function closePop() { g('picker-pop').classList.remove('open'); initUI(); draw(); }
     function setC(c) { if(curId==='bg') bgColor=c; else if(curId==='g1') grad.c1=c; else if(curId==='g2') grad.c2=c; else layers.find(x=>x.id===curId).color=c; draw(); }
-    g('hex-in').oninput = function() { setC(this.value); }
     g('preset-grid').innerHTML = presets.map(c => `<div class="kuu-color-btn" style="background:${c}" onclick="setC('${c}')"></div>`).join('');
 
     function draw() {
@@ -148,36 +145,41 @@
 
         [...layers].reverse().forEach(l => {
             ctx.save(); ctx.globalAlpha = l.op; ctx.fillStyle = l.color; ctx.strokeStyle = l.color;
+            const isPattern = l.type==='stripes' || l.type==='gingham';
+            const rad = (l.ang || 0) * Math.PI / 180;
+
             if(l.type === 'gingham') {
+                ctx.translate(c.width/2, c.height/2); ctx.rotate(rad);
                 const gs = l.sz * 0.8; ctx.globalAlpha *= 0.6;
-                for(let y=0; y<c.height+gs; y+=gs*2) ctx.fillRect(0, y, c.width, gs);
-                for(let x=0; x<c.width+gs; x+=gs*2) ctx.fillRect(x, 0, gs, c.height);
+                for(let y=-c.height; y<c.height; y+=gs*2) ctx.fillRect(-c.width, y, c.width*2, gs);
+                for(let x=-c.width; x<c.width; x+=gs*2) ctx.fillRect(x, -c.height, gs, c.height*2);
             } else {
-                for(let y=-l.sp; y<c.height+l.sp; y+=l.sp) for(let x=-l.sp; x<c.width+l.sp; x+=l.sp) {
-                    let rx = x + (Math.floor(y/l.sp)%2==0?0:l.sp/2) + (Math.random()-0.5)*l.scatter;
-                    let ry = y + (Math.random()-0.5)*l.scatter;
-                    // ✨ 隨機大小應用：應用 baseSz * (1 + (Math.random()-0.5) * l.sizeVar/50)
+                for(let y=-l.sp*2; y<c.height+l.sp*2; y+=l.sp) for(let x=-l.sp*2; x<c.width+l.sp*2; x+=l.sp) {
+                    let rx = x + (Math.floor(y/l.sp)%2==0?0:l.sp/2) + (isPattern?0:(Math.random()-0.5)*l.scatter);
+                    let ry = y + (isPattern?0:(Math.random()-0.5)*l.scatter);
                     let baseSz = l.sz * 0.3; 
-                    let finalSz = Math.max(1, baseSz * (1 + (Math.random()-0.5)*(l.sizeVar||0)/50));
+                    let finalSz = isPattern ? baseSz : Math.max(1, baseSz * (1 + (Math.random()-0.5)*(l.sizeVar||0)/50));
                     
+                    ctx.save(); ctx.translate(rx, ry); ctx.rotate(rad);
                     if(l.type==='emoji') {
                         const eC = document.createElement('canvas'); eC.width = finalSz * 3; eC.height = finalSz * 3;
                         const eX = eC.getContext('2d'); eX.font = `${finalSz * 2}px serif`; eX.textAlign='center'; eX.textBaseline='middle';
                         eX.fillText(l.val, eC.width/2, eC.height/2);
                         if(l.fill) { eX.globalCompositeOperation = 'source-in'; eX.fillStyle = l.color; eX.fillRect(0,0,eC.width,eC.height); }
-                        ctx.drawImage(eC, rx - eC.width/2, ry - eC.height/2);
+                        ctx.drawImage(eC, -eC.width/2, -eC.height/2);
                     } else if(l.type==='stripes') {
-                        ctx.beginPath(); ctx.lineWidth = finalSz * 0.5; // Stripes 也支持隨機粗細
-                        ctx.moveTo(rx - 1500, ry - 1500); ctx.lineTo(rx + 1500, ry + 1500); ctx.stroke();
+                        ctx.beginPath(); ctx.lineWidth = finalSz * 0.5;
+                        ctx.moveTo(-2000, 0); ctx.lineTo(2000, 0); ctx.stroke();
                     } else {
                         ctx.beginPath();
-                        if(l.type==='dots') ctx.arc(rx,ry,finalSz/2,0,7);
+                        if(l.type==='dots') ctx.arc(0,0,finalSz/2,0,7);
                         else if(l.type==='stars') {
                             let r=finalSz/2, ir=r*0.4, rot=Math.PI/2*3;
-                            for(let i=0;i<5;i++){ ctx.lineTo(rx+Math.cos(rot)*r, ry+Math.sin(rot)*r); rot+=Math.PI/5; ctx.lineTo(rx+Math.cos(rot)*ir, ry+Math.sin(rot)*ir); rot+=Math.PI/5; }
+                            for(let i=0;i<5;i++){ ctx.lineTo(Math.cos(rot)*r, Math.sin(rot)*r); rot+=Math.PI/5; ctx.lineTo(Math.cos(rot)*ir, Math.sin(rot)*ir); rot+=Math.PI/5; }
                         }
                         ctx.closePath(); l.fill ? ctx.fill() : ctx.stroke();
                     }
+                    ctx.restore();
                 }
             }
             ctx.restore();
