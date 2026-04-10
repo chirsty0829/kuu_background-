@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>뀨 kuu 🎀 Studio V8.5.2 Final</title>
+    <title>뀨 kuu 🎀 Studio V8.5.3 Fix</title>
     <style>
         :root { --p: #ffeef2; --a: #ffb7c5; --txt: #726063; --radius: 20px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Quicksand", "PingFang TC", sans-serif; }
@@ -52,7 +52,7 @@
 
     <div class="top-bar">
         <div class="top-left">
-            <div class="brand">뀨 kuu Studio V8.5.2</div>
+            <div class="brand">뀨 kuu Studio V8.5.3 Fix</div>
             <div class="ratio-btns">
                 <button class="ratio-btn active" onclick="setRatio(9/16, this)">9:16</button>
                 <button class="ratio-btn" onclick="setRatio(1/1, this)">1:1</button>
@@ -171,9 +171,9 @@
                     <div class="row">
                         <div class="kuu-color-btn" style="background:${l.color}" onclick="openPicker(${l.id})"></div>
                         <span class="label">顏色</span>
-                        ${l.type!=='stripes' && l.type!=='gingham' ? `<button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'實心染':'原樣'}</button>` : ''}
+                        ${l.type!=='gingham' ? `<button class="toggle-btn ${!l.fill?'active':''}" onclick="tglF(${l.id})">${l.fill?'實心/染色':'原樣/鏤空'}</button>` : ''}
                     </div>
-                    <div class="row"><span class="label">大小</span><input type="range" min="2" max="500" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
+                    <div class="row"><span class="label">${l.type==='stripes'?'粗細':'大小'}</span><input type="range" min="2" max="500" value="${l.sz}" oninput="upd(${l.id}, 'sz', this.value)"></div>
                     ${l.type!=='gingham' ? `<div class="row"><span class="label">間距</span><input type="range" min="20" max="600" value="${l.sp}" oninput="upd(${l.id}, 'sp', this.value)"></div>` : ''}
                     <div class="row"><span class="label">模糊</span><input type="range" min="0" max="30" value="${l.blur}" oninput="upd(${l.id}, 'blur', this.value)"></div>
                     <div class="row"><span class="label">不透明度</span><input type="range" min="0" max="100" value="${l.op*100}" oninput="upd(${l.id}, 'op', this.value/100)"></div>
@@ -223,14 +223,13 @@
                 for(let y=0; y<c.height+gs; y+=gs*2) ctx.fillRect(0, y, c.width, gs);
                 for(let x=0; x<c.width+gs; x+=gs*2) ctx.fillRect(x, 0, gs, c.height);
             } else {
-                for(let y=0; y<c.height+l.sp; y+=l.sp) for(let x=0; x<c.width+l.sp; x+=l.sp) {
+                for(let y=-l.sp; y<c.height+l.sp; y+=l.sp) for(let x=-l.sp; x<c.width+l.sp; x+=l.sp) {
                     let ox=(Math.floor(y/l.sp)%2==0)?0:l.sp/2;
                     let rx = x + ox + (Math.random()-0.5)*l.scatter;
                     let ry = y + (Math.random()-0.5)*l.scatter;
                     let rs = Math.max(1, l.sz * (1 + (Math.random()-0.5)*l.sizeVar/50));
                     
                     if(l.type==='emoji') {
-                        // ✨ Emoji 染色核心修復：使用離屏畫布進行染色
                         const eC = document.createElement('canvas'); eC.width = rs * 1.5; eC.height = rs * 1.5;
                         const eX = eC.getContext('2d'); eX.font = `${rs}px serif`; eX.textAlign='center'; eX.textBaseline='middle';
                         if(l.fill) {
@@ -239,15 +238,22 @@
                             eX.fillStyle = l.color; eX.fillRect(0,0,eC.width,eC.height);
                         } else { eX.fillText(l.val, eC.width/2, eC.height/2); }
                         ctx.drawImage(eC, rx - eC.width/2, ry - eC.height/2);
+                    } else if(l.type==='stripes') {
+                        // ✨ 條紋渲染邏輯修復加固
+                        ctx.beginPath();
+                        ctx.lineWidth = rs;
+                        // 畫一條斜線，長度足以覆蓋畫布
+                        ctx.moveTo(rx - 1500, ry - 1500);
+                        ctx.lineTo(rx + 1500, ry + 1500);
+                        ctx.stroke();
                     } else {
                         ctx.beginPath();
-                        if(l.type==='dots') ctx.arc(rx,ry,rs/2,0,7);
+                        if(l.type==='dots') ctx.arc(rx,ry,rs/2,0,Math.PI*2);
                         else if(l.type==='stars') {
                             let r=rs/2, ir=rs*0.2, rot=Math.PI/2*3;
                             for(let i=0;i<5;i++){ ctx.lineTo(rx+Math.cos(rot)*r, ry+Math.sin(rot)*r); rot+=Math.PI/5; ctx.lineTo(rx+Math.cos(rot)*ir, ry+Math.sin(rot)*ir); rot+=Math.PI/5; }
-                        } else if(l.type==='stripes') {
-                            ctx.lineWidth = rs; ctx.moveTo(rx-2000, ry-2000); ctx.lineTo(rx+2000, ry+2000);
                         }
+                        ctx.closePath();
                         l.fill ? ctx.fill() : ctx.stroke();
                     }
                 }
